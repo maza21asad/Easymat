@@ -633,7 +633,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -1.8778992, y: -31.059326}
+  m_AnchoredPosition: {x: -1.8778687, y: -31.059326}
   m_SizeDelta: {x: -184.0465, y: -230.6249}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &38302421
@@ -4764,7 +4764,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 214, y: -3.0000038}
+  m_AnchoredPosition: {x: 214, y: 1}
   m_SizeDelta: {x: 403.3908, y: 104.0866}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &655487006
@@ -5061,7 +5061,7 @@ GameObject:
   - component: {fileID: 690207651}
   - component: {fileID: 690207650}
   m_Layer: 5
-  m_Name: ExistingPlanWindow (1)
+  m_Name: MonthlyYearlyWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7989,7 +7989,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.40231323, y: -111.00452}
+  m_AnchoredPosition: {x: -0.40234375, y: -111.00452}
   m_SizeDelta: {x: -85.4594, y: -481.8547}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1015634864
@@ -11689,7 +11689,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -215, y: -3.0000038}
+  m_AnchoredPosition: {x: -215, y: 1}
   m_SizeDelta: {x: 403.3908, y: 104.0866}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1586490276
