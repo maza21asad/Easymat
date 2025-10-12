@@ -23,6 +23,7 @@ public class MenuManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        ShowPanel(mainMenuPanel);
     }
 
     // Show a specific panel and hide others
