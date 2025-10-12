@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
@@ -46,24 +47,28 @@ public class MenuManager : MonoBehaviour
         if (panelHistory.Count > 0)
         {
             // Pop the current panel
-            panelHistory.Pop();
+            GameObject closedPanel = panelHistory.Pop();
+            closedPanel.SetActive(false);
             // Show the previous panel
             if (panelHistory.Count > 0)
             {
                 GameObject previousPanel = panelHistory.Peek();
-                ShowPanel(previousPanel);
+                //ShowPanel(previousPanel);
+                previousPanel.SetActive(true);
             }
             else
             {
                 // If there's no previous panel, show the main menu
-                ShowPanel(mainMenuPanel);
+                //ShowPanel(mainMenuPanel);
+                mainMenuPanel.SetActive(true);
+                panelHistory.Push(mainMenuPanel);
             }
         }
-        else
-        {
-            // If there's no panel in history, show the main menu
-            ShowPanel(mainMenuPanel);
-        }
+        //else
+        //{
+        //    // If there's no panel in history, show the main menu
+        //    ShowPanel(mainMenuPanel);
+        //}
     }
 
     // Go back to the previous panel
@@ -72,21 +77,24 @@ public class MenuManager : MonoBehaviour
         if (panelHistory.Count > 1)
         {
             // Pop the current panel
-            panelHistory.Pop();
+            GameObject current = panelHistory.Pop();
+            current.SetActive(false);
             // Show the previous panel
             GameObject previousPanel = panelHistory.Peek();
-            ShowPanel(previousPanel);
+            //ShowPanel(previousPanel);
+            previousPanel.SetActive(true);
         }
-        else
-        {
-            // If there's no previous panel, show the main menu
-            ShowPanel(mainMenuPanel);
-        }
+        //else
+        //{
+        //    // If there's no previous panel, show the main menu
+        //    ShowPanel(mainMenuPanel);
+        //}
     }
 
     // Load another scene
     public void LoadScene(string sceneName)
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        //UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        SceneManager.LoadScene(sceneName);
     }
 }
