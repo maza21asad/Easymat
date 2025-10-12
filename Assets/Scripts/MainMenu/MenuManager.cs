@@ -37,6 +37,7 @@ public class MenuManager : MonoBehaviour
         if (panelToShow != null)
         {
             panelToShow.SetActive(true);
+            ////mainMenuPanel.SetActive(false);
             panelHistory.Push(panelToShow);
         }
     }
@@ -55,6 +56,7 @@ public class MenuManager : MonoBehaviour
                 GameObject previousPanel = panelHistory.Peek();
                 //ShowPanel(previousPanel);
                 previousPanel.SetActive(true);
+               
             }
             else
             {
