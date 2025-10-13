@@ -3759,7 +3759,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &159793835
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13836,8 +13836,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 248111287}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.26488137, y: 0}
-  m_AnchorMax: {x: 0.74112874, y: 1}
+  m_AnchorMin: {x: 0.26816517, y: 0}
+  m_AnchorMax: {x: 0.73791945, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -23232,7 +23232,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1128256242}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 920337464}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: LoadScene
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Ball Swipe
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1128256242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40529,8 +40541,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 689562838}
   m_HandleRect: {fileID: 689562837}
   m_Direction: 0
-  m_Value: 0.50573754
-  m_Size: 0.47624737
+  m_Value: 0.5057376
+  m_Size: 0.46975425
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
