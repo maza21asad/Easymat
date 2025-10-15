@@ -1,8 +1,9 @@
+﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-using DG.Tweening;
 
 public class MenuManager : MonoBehaviour
 {
@@ -13,6 +14,15 @@ public class MenuManager : MonoBehaviour
     public List<GameObject> allPanels;
 
     private Stack<GameObject> panelHistory = new Stack<GameObject>();
+
+    [Header("UFO Settings")]
+    public Transform ufo;
+    public float ufoFlyDuration = 1.2f;
+    //public Ease ufoFlyEase = Ease.InBounce;
+    public Ease ufoFlyEase = Ease.InOutQuad;
+
+    private Vector3 ufoStartPosition;
+    private Vector3 ufoStartScale;
 
     private void Awake()
     {
@@ -25,7 +35,25 @@ public class MenuManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        if (ufo != null)
+        {
+            ufoStartPosition = ufo.GetComponent<RectTransform>().anchoredPosition;
+            ufoStartScale = ufo.localScale;
+        }
+
         ShowPanel(mainMenuPanel);
+    }
+
+    private void ResetUFOPosition()
+    {
+        if (ufo != null)
+        {
+            RectTransform ufoRect = ufo.GetComponent<RectTransform>();
+            ufoRect.anchoredPosition = ufoStartPosition;
+            ufo.localScale = ufoStartScale;
+            ufo.gameObject.SetActive(true);
+        }
     }
 
     private void AnimatePanelFade(GameObject panel)
@@ -53,6 +81,46 @@ public class MenuManager : MonoBehaviour
             AnimatePanelFade(panelToShow);
             panelHistory.Push(panelToShow);
         }
+    }
+
+    public void UFOFlyIntoButton(GameObject targetPanel)
+    {
+        if (ufo == null || targetPanel == null) return;
+
+        // Detect which button triggered the click
+        GameObject clickedButton = EventSystem.current.currentSelectedGameObject;
+        if (clickedButton == null) return;
+
+        Transform targetButton = clickedButton.transform;
+
+        // Make sure UFO is visible
+        ufo.gameObject.SetActive(true);
+
+        // Stop any previous animation
+        ufo.DOKill();
+
+        // Create the flying sequence
+        Sequence seq = DOTween.Sequence();
+
+        // Move UFO toward the button’s position
+        RectTransform ufoRect = ufo.GetComponent<RectTransform>();
+        RectTransform buttonRect = targetButton.GetComponent<RectTransform>();
+
+        // Animate UFO to the button’s anchored position
+        seq.Append(ufoRect.DOAnchorPos(buttonRect.anchoredPosition, ufoFlyDuration).SetEase(ufoFlyEase));
+
+        // Optionally scale UFO to simulate “entering” the button
+        seq.Join(ufo.DOScale(0.2f, ufoFlyDuration * 1f));
+
+        // After UFO disappears → show the new panel
+        seq.OnComplete(() =>
+        {
+            ufo.localScale = Vector3.one; // Reset for next time
+            ufo.gameObject.SetActive(false);
+
+            // Show the next panel
+            ShowPanel(targetPanel);
+        });
     }
 
     public void CloseCurrentPanel()
@@ -101,7 +169,13 @@ public class MenuManager : MonoBehaviour
 
                     // Animate the previous panel back in
                     AnimatePanelFade(previous);
-                });
+
+                    // If returning to main menu or a root panel, reset UFO
+                    if (previous == mainMenuPanel)
+                    {
+                        ResetUFOPosition();
+                    }
+                }); 
         }
     }
 
