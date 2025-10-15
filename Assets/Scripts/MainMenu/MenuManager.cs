@@ -28,16 +28,6 @@ public class MenuManager : MonoBehaviour
         ShowPanel(mainMenuPanel);
     }
 
-    //private void AnimatePanel(GameObject panel)
-    //{
-    //    // Reset to small and scale up for pop-up effect
-    //    panel.transform.localScale = Vector3.zero;
-    //    panel.SetActive(true);
-
-    //    // DOTween pop animation
-    //    panel.transform.DOScale(Vector3.one, 0.4f)
-    //        .SetEase(Ease.OutBack); // Nice “pop” feel
-    //}
     private void AnimatePanelFade(GameObject panel)
     {
         CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
@@ -53,21 +43,6 @@ public class MenuManager : MonoBehaviour
         canvasGroup.DOFade(1f, 0.3f);
     }
 
-
-    // Show a specific panel and hide others
-    //public void ShowPanel(GameObject panelToShow)
-    //{
-    //    foreach (GameObject panel in allPanels)
-    //    {
-    //        panel.SetActive(false);
-    //    }
-    //    if (panelToShow != null)
-    //    {
-    //        panelToShow.SetActive(true);
-    //        ////mainMenuPanel.SetActive(false);
-    //        panelHistory.Push(panelToShow);
-    //    }
-    //}
     public void ShowPanel(GameObject panelToShow)
     {
         foreach (GameObject panel in allPanels)
@@ -80,37 +55,6 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-
-    // Close current panel (for cross or exit button)
-    //public void CloseCurrentPanel()
-    //{
-    //    if (panelHistory.Count > 0)
-    //    {
-    //        // Pop the current panel
-    //        GameObject closedPanel = panelHistory.Pop();
-    //        closedPanel.SetActive(false);
-    //        // Show the previous panel
-    //        if (panelHistory.Count > 0)
-    //        {
-    //            GameObject previousPanel = panelHistory.Peek();
-    //            //ShowPanel(previousPanel);
-    //            previousPanel.SetActive(true);
-
-    //        }
-    //        else
-    //        {
-    //            // If there's no previous panel, show the main menu
-    //            //ShowPanel(mainMenuPanel);
-    //            mainMenuPanel.SetActive(true);
-    //            panelHistory.Push(mainMenuPanel);
-    //        }
-    //    }
-    //    //else
-    //    //{
-    //    //    // If there's no panel in history, show the main menu
-    //    //    ShowPanel(mainMenuPanel);
-    //    //}
-    //}
     public void CloseCurrentPanel()
     {
         if (panelHistory.Count > 0)
@@ -135,26 +79,6 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-
-    // Go back to the previous panel
-    //public void GoBack()
-    //{
-    //    if (panelHistory.Count > 1)
-    //    {
-    //        // Pop the current panel
-    //        GameObject current = panelHistory.Pop();
-    //        current.SetActive(false);
-    //        // Show the previous panel
-    //        GameObject previousPanel = panelHistory.Peek();
-    //        //ShowPanel(previousPanel);
-    //        previousPanel.SetActive(true);
-    //    }
-    //    //else
-    //    //{
-    //    //    // If there's no previous panel, show the main menu
-    //    //    ShowPanel(mainMenuPanel);
-    //    //}
-    //}
     public void GoBack()
     {
         if (panelHistory.Count > 1)
@@ -185,7 +109,6 @@ public class MenuManager : MonoBehaviour
     // Load another scene
     public void LoadScene(string sceneName)
     {
-        //UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
         SceneManager.LoadScene(sceneName);
     }
 }
