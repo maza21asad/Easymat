@@ -115,8 +115,8 @@ public class MenuManager : MonoBehaviour
         seq.Append(ufoRect.DOAnchorPos(buttonRect.anchoredPosition, ufoFlyDuration).SetEase(ufoFlyEase));
 
         // Optionally scale UFO to simulate “entering” the button
-        seq.Join(ufo.DOScale(0.4f, ufoFlyDuration * 0.8f));
-        seq.Join(ufoParticle.DOScale(0.4f, ufoFlyDuration * 0.8f));
+        seq.Join(ufo.DOScale(0.3f, ufoFlyDuration * 0.8f));
+        seq.Join(ufoParticle.DOScale(0.3f, ufoFlyDuration * 0.8f));
 
 
         // After UFO disappears → show the new panel
