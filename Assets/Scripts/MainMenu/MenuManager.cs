@@ -16,12 +16,13 @@ public class MenuManager : MonoBehaviour
     private Stack<GameObject> panelHistory = new Stack<GameObject>();
 
     [Header("UFO Settings")]
-    public Transform ufo;
+    public Transform ufo, ufoParticle;
     public float ufoFlyDuration = 1.2f;
     //public Ease ufoFlyEase = Ease.InBounce;
     public Ease ufoFlyEase = Ease.InOutQuad;
 
     private Vector3 ufoStartPosition;
+    private Vector3 ufoStartParScale;
     private Vector3 ufoStartScale;
 
     private void Awake()
@@ -40,6 +41,7 @@ public class MenuManager : MonoBehaviour
         {
             ufoStartPosition = ufo.GetComponent<RectTransform>().anchoredPosition;
             ufoStartScale = ufo.localScale;
+            ufoStartParScale = ufoParticle.localScale;
         }
 
         ShowPanel(mainMenuPanel);
@@ -52,6 +54,7 @@ public class MenuManager : MonoBehaviour
             RectTransform ufoRect = ufo.GetComponent<RectTransform>();
             ufoRect.anchoredPosition = ufoStartPosition;
             ufo.localScale = ufoStartScale;
+            ufoParticle.localScale = ufoStartParScale;
             ufo.gameObject.SetActive(true);
         }
     }
@@ -93,6 +96,8 @@ public class MenuManager : MonoBehaviour
 
         Transform targetButton = clickedButton.transform;
 
+        ufo.GetComponent<Animator>().enabled = true;
+
         // Make sure UFO is visible
         ufo.gameObject.SetActive(true);
 
@@ -110,7 +115,9 @@ public class MenuManager : MonoBehaviour
         seq.Append(ufoRect.DOAnchorPos(buttonRect.anchoredPosition, ufoFlyDuration).SetEase(ufoFlyEase));
 
         // Optionally scale UFO to simulate “entering” the button
-        seq.Join(ufo.DOScale(0.2f, ufoFlyDuration * 1f));
+        seq.Join(ufo.DOScale(0.4f, ufoFlyDuration * 0.8f));
+        seq.Join(ufoParticle.DOScale(0.4f, ufoFlyDuration * 0.8f));
+
 
         // After UFO disappears → show the new panel
         seq.OnComplete(() =>
@@ -174,6 +181,7 @@ public class MenuManager : MonoBehaviour
                     if (previous == mainMenuPanel)
                     {
                         ResetUFOPosition();
+                        ufo.GetComponent<Animator>().enabled = false;
                     }
                 }); 
         }
