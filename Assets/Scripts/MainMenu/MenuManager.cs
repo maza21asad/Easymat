@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
@@ -86,7 +87,7 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    public void UFOFlyIntoButton(GameObject targetPanel)
+    /*public void UFOFlyIntoButton(GameObject targetPanel)
     {
         if (ufo == null || targetPanel == null) return;
 
@@ -95,6 +96,16 @@ public class MenuManager : MonoBehaviour
         if (clickedButton == null) return;
 
         Transform targetButton = clickedButton.transform;
+
+        ///======
+        Button buttonComponent = clickedButton.GetComponent<Button>();
+
+        // Call glow here – right before flight starts
+        if (buttonComponent != null)
+        {
+            GlowButtonOutline(buttonComponent);
+        }
+        ///======
 
         ufo.GetComponent<Animator>().enabled = true;
 
@@ -129,6 +140,79 @@ public class MenuManager : MonoBehaviour
             ShowPanel(targetPanel);
         });
     }
+
+    public void GlowButtonOutline(Button button)
+    {
+        Outline outline = button.GetComponent<Outline>();
+        if (outline == null) outline = button.gameObject.AddComponent<Outline>();
+
+        outline.effectColor = Color.cyan;
+        outline.DOFade(1f, 0.3f).From(0f).SetLoops(2, LoopType.Yoyo);
+    }*/
+
+    public void UFOFlyIntoButton(GameObject targetPanel)
+    {
+        if (ufo == null || targetPanel == null) return;
+
+        // Detect which button triggered the click
+        GameObject clickedButton = EventSystem.current.currentSelectedGameObject;
+        if (clickedButton == null) return;
+
+        Transform targetButton = clickedButton.transform;
+        Button buttonComponent = clickedButton.GetComponent<Button>();
+
+        // --- 🌟 Start glow and keep it until next panel shows ---
+        Outline outline = null;
+        if (buttonComponent != null)
+        {
+            outline = buttonComponent.GetComponent<Outline>();
+            if (outline == null) outline = buttonComponent.gameObject.AddComponent<Outline>();
+            outline.effectColor = Color.cyan;
+            outline.effectDistance = new Vector2(5, 5);
+            outline.enabled = true;
+        }
+
+        ufo.GetComponent<Animator>().enabled = true;
+
+        // Make sure UFO is visible
+        ufo.gameObject.SetActive(true);
+        ufo.DOKill();
+
+        // Create the flying sequence
+        Sequence seq = DOTween.Sequence();
+
+        RectTransform ufoRect = ufo.GetComponent<RectTransform>();
+        RectTransform buttonRect = targetButton.GetComponent<RectTransform>();
+
+        // Move UFO toward the button’s position
+        seq.Append(ufoRect.DOAnchorPos(buttonRect.anchoredPosition, ufoFlyDuration).SetEase(ufoFlyEase));
+
+        // Scale down UFO and its particles while flying
+        seq.Join(ufo.DOScale(0.3f, ufoFlyDuration * 0.8f));
+        seq.Join(ufoParticle.DOScale(0.3f, ufoFlyDuration * 0.8f));
+
+        // When flight finishes
+        seq.OnComplete(() =>
+        {
+            ufo.localScale = Vector3.one; // Reset for next time
+            ufo.gameObject.SetActive(false);
+
+            // Show the next panel
+            ShowPanel(targetPanel);
+
+            // ✨ Disable glow once the panel appears
+            if (outline != null)
+            {
+                DOTween.Sequence()
+                    .AppendInterval(0.4f) // small delay to match panel fade
+                    .AppendCallback(() =>
+                    {
+                        outline.DOFade(0f, 0.4f).OnComplete(() => outline.enabled = false);
+                    });
+            }
+        });
+    }
+
 
     public void CloseCurrentPanel()
     {
