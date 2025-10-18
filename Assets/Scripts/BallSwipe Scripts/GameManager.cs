@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Show/hide orange & cyan after 40 points
-        if (score >= 5)
+        if (score >= 40)
         {
             if (middleRight) middleRight.gameObject.SetActive(true);
             if (middleLeft) middleLeft.gameObject.SetActive(true);
