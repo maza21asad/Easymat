@@ -29,15 +29,15 @@ RectTransform:
   m_GameObject: {fileID: 6861439240962131306}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -35520.004}
-  m_LocalScale: {x: 394.66666, y: 394.66666, z: 394.66666}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 4, y: 775}
-  m_SizeDelta: {x: 1.8, y: 1.1}
+  m_AnchoredPosition: {x: 3.8029, y: 774.866}
+  m_SizeDelta: {x: 1.4657, y: 0.892}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &1293419651727254291
 SpriteRenderer:
@@ -123,18 +123,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.000012173783, y: -0.000006115879}
+  m_Offset: {x: 0.00094389915, y: 0.006378174}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.00438, y: 0.00269}
+    oldSize: {x: 1.46, y: 0.89666665}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.00447069, y: 0.0027557064}
+  m_Size: {x: 1.4547958, y: 0.8921509}
   m_EdgeRadius: 0
 --- !u!50 &1557623863146618365
 Rigidbody2D:
@@ -148,7 +148,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 1.9189711
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -161,7 +161,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &6443806458797046126
 MonoBehaviour:
