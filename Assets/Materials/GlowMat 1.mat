@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GlowMat
-  m_Shader: {fileID: -6465566751694194690, guid: 0d7f49a5a6e3f5545a704c5df4bfbbdb,
+  m_Name: GlowMat 1
+  m_Shader: {fileID: -6465566751694194690, guid: f0c2e03bda41da744923cae2225b6b07,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -90,7 +90,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture2D:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 80d5e0741e67058459fe06a57041c97c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture2DAsset_0972ef0c98414745947a2f9687cf2bfc_Out_0_Texture2D:
