@@ -15,63 +15,67 @@ public class Block : MonoBehaviour
 
     public void Initialize(BlockManager blockManager, bool autoDrop = false)
     {
+        manager = blockManager;
         rb = GetComponent<Rigidbody2D>();
+
         if (rb == null)
         {
-            Debug.LogError("Block prefab is missing a Rigidbody2D component!");
+            Debug.LogError("Block missing Rigidbody2D!");
             return;
         }
 
-        // Set the block's Tag to "Block" upon initialization if it wasn't already set
-        // This is crucial for collision detection with other blocks.
         gameObject.tag = "Block";
-
-        manager = blockManager;
         startPos = transform.position;
 
-        // Kinematic/Movement logic is correct: 
-        // First block (autoDrop=true) falls immediately.
-        // Subsequent blocks (autoDrop=false) move horizontally.
-        rb.isKinematic = !autoDrop;
-        isMoving = !autoDrop;
+        // Set up the Rigidbody2D initially
+        rb.isKinematic = true; // Start as kinematic to allow movement via transform
+        rb.gravityScale = 0f;
+
+        if (autoDrop)
+        {
+            // First block drops immediately without lateral movement
+            rb.isKinematic = false;
+            rb.gravityScale = 1f;
+            isMoving = false;
+        }
+        else
+        {
+            // Subsequent blocks move laterally
+            isMoving = true;
+        }
     }
 
     void Update()
     {
-        // Horizontal movement logic
         if (isMoving && !hasLanded)
         {
+            // Horizontal movement
             float x = Mathf.PingPong(Time.time * moveSpeed, moveRange * 2) - moveRange;
             transform.position = new Vector3(startPos.x + x, transform.position.y, transform.position.z);
         }
 
-        // Drop initiation (on mouse click/touch)
+        // Drop the block on touch/click
         if (isMoving && !hasLanded && Input.GetMouseButtonDown(0))
         {
-            isMoving = false;
-            rb.isKinematic = false; // Start falling
+            rb.isKinematic = false; // Disable kinematic so physics (gravity) takes over
+            rb.gravityScale = 1f;
+            isMoving = false; // Stop horizontal movement
         }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // If this block has already landed and is static, skip this.
         if (hasLanded) return;
 
-        // Check for collision with the Ground or another landed Block
         if (collision.collider.CompareTag("Ground") || collision.collider.CompareTag("Block"))
         {
-            Debug.Log($"Block landed on {collision.gameObject.tag}.");
             hasLanded = true;
-
-            // 1. Stop all motion and make the current block a static platform.
             rb.velocity = Vector2.zero;
-            rb.isKinematic = true;
+            rb.angularVelocity = 0f; // Prevent rotation/tilting
+            rb.isKinematic = true; // ? CRITICAL FIX: Lock the block in place to prevent physics jittering
 
-            // 2. Inform the manager to spawn the next block using this block's position.
-            manager.OnBlockLanded(this.gameObject);
-
-           
+            // Notify the manager
+            manager.OnBlockLanded(gameObject);
         }
     }
 }
