@@ -71,20 +71,7 @@ public class Block : MonoBehaviour
             // 2. Inform the manager to spawn the next block using this block's position.
             manager.OnBlockLanded(this.gameObject);
 
-            // 3. CRITICAL: Destroy the current block. 
-            // In a stacking game, we usually destroy the block that just landed 
-            // to keep the hierarchy clean and prevent issues, but the block below it 
-            // (the one it collided with) should REMAIN to act as the stack.
-            // Wait! If you want a visual stack, DO NOT DESTROY THE BLOCK.
-
-            // *** REVISED: If you want a continuous visual stack, DO NOT DESTROY ***
-            // Instead, we just need to ensure the block below it is tagged correctly.
-
-            // To be safe, if you want a visual stack, comment out the Destroy call:
-            // Destroy(this.gameObject); 
-
-            // If the manager successfully spawns the next block, the chain should continue.
-            // If the problem is the stack disappearing, ensure you are NOT destroying the block here.
+           
         }
     }
 }

@@ -1,64 +1,137 @@
+using System.Collections;
 using UnityEngine;
-using Cinemachine; // IMPORTANT: Need this for the Virtual Camera
+using Cinemachine;
 
 public class BlockManager : MonoBehaviour
 {
-    // *** CRITICAL: Drag your Block Prefab (from the Project folder) into this slot in the Inspector. ***
-    public GameObject blockPrefab;
-
-    // *** CRITICAL: Drag the Transform of an empty GameObject (SpawnPoint) into this slot. ***
-    public Transform spawnPoint;
-
-    // *** NEW CRITICAL: Drag your Cinemachine Virtual Camera (VCam) into this slot. ***
+    public GameObject blockPrefab;           // world-space prefab (SpriteRenderer, Rigidbody2D, BoxCollider2D)
+    public Transform spawnPoint;             // world-space spawn point
+    public Transform cameraTarget;           // empty world-space object; vCam.Follow should be this
     public CinemachineVirtualCamera virtualCamera;
+
+    [Header("Spawn / Camera")]
+    public float spawnOffsetY = 2f;          // vertical offset above top block for next spawn
+    public float cameraLerpSpeed = 3f;
+
+    private GameObject topBlock;
+    private GameObject currentBlock;
+    private float highestY = float.MinValue;
 
     void Start()
     {
-        // This is the correct logic: it ensures the very first block is spawned 
-        // and falls automatically when the game starts.
+        if (cameraTarget == null) Debug.LogWarning("CameraTarget not assigned!");
+        if (virtualCamera != null && cameraTarget != null) virtualCamera.Follow = cameraTarget;
         SpawnBlock(autoDrop: true);
     }
 
-    public void OnBlockLanded(GameObject landedBlock)
+    void Update()
     {
-        // 1. Calculate the position for the NEXT block (2 units above the landed block)
-        Vector3 newPos = landedBlock.transform.position + new Vector3(0, 2f, 0);
+        // If there's no active moving block, spawn a new one
+        if (currentBlock == null)
+        {
+            SpawnBlock(autoDrop: false);
+        }
 
-        // 2. Update the spawnPoint position FIRST, so the next instantiated block uses it.
-        spawnPoint.position = newPos;
+        // Optionally update cameraTarget every frame to the midpoint
+        UpdateCameraTargetMidpoint();
+    }
+    void LateUpdate()
+    {
+        if (cameraTarget == null) return;
 
-        // 3. Spawn the next block. It will be set to move horizontally and wait for the player click.
-        SpawnBlock(autoDrop: false);
-
-        // Note: The blocks themselves remain to form the stack, no need to destroy them here.
+        if (topBlock != null && currentBlock != null)
+        {
+            float midY = (topBlock.transform.position.y + currentBlock.transform.position.y) / 2f;
+            Vector3 targetPos = cameraTarget.position;
+            targetPos.y = Mathf.Lerp(cameraTarget.position.y, midY, Time.deltaTime * 3f);
+            cameraTarget.position = targetPos;
+        }
     }
 
     private void SpawnBlock(bool autoDrop)
     {
-        // The block is instantiated at the current position of the spawnPoint Transform.
-        GameObject newBlock = Instantiate(blockPrefab, spawnPoint.position, Quaternion.identity);
+        if (blockPrefab == null || spawnPoint == null)
+        {
+            Debug.LogError("Block Prefab or Spawn Point is not assigned!");
+            return;
+        }
 
-        // --- NEW: Set the VCam to follow the newly spawned block ---
+        // Instantiate new block
+        GameObject newBlock = Instantiate(blockPrefab, spawnPoint.position, Quaternion.identity);
+        Debug.Log("Spawned new block at: " + spawnPoint.position);
+
+        // Update Cinemachine to follow the new block
         if (virtualCamera != null)
         {
-            // Set the VCam's Follow target to the transform of the new block
             virtualCamera.Follow = newBlock.transform;
         }
-        else
-        {
-            Debug.LogWarning("Virtual Camera not assigned to BlockManager! Camera will not follow the block.");
-        }
-        // -----------------------------------------------------------
 
+        // Initialize block
         Block blockScript = newBlock.GetComponent<Block>();
         if (blockScript != null)
         {
-            // Initialize the block with a reference to this manager and set its drop behavior.
             blockScript.Initialize(this, autoDrop);
         }
         else
         {
             Debug.LogError("Block prefab is missing the 'Block' script!");
         }
+    }
+
+    // Called by Block when it lands
+    public void OnBlockLanded(GameObject landed)
+    {
+        // Set topBlock
+        topBlock = landed;
+
+        // Update highestY
+        if (landed.transform.position.y > highestY) highestY = landed.transform.position.y;
+
+        // Move spawnPoint up so next spawn uses it (optional)
+        if (spawnPoint != null)
+        {
+            spawnPoint.position = new Vector3(spawnPoint.position.x, highestY + spawnOffsetY, spawnPoint.position.z);
+        }
+
+        // Smoothly move cameraTarget up to the new midpoint (handled by UpdateCameraTargetMidpoint)
+        // Immediately set topBlock but don't change cameraTarget.x
+        // currentBlock will be set to null by the Block script (so Update will spawn next)
+    }
+
+    private void UpdateCameraTargetMidpoint()
+    {
+        if (cameraTarget == null) return;
+
+        Vector3 desiredPos = cameraTarget.position;
+
+        if (topBlock != null && currentBlock != null)
+        {
+            Vector3 mid = (topBlock.transform.position + currentBlock.transform.position) * 0.5f;
+            desiredPos = new Vector3(cameraTarget.position.x, mid.y, cameraTarget.position.z);
+        }
+        else if (topBlock != null)
+        {
+            desiredPos = new Vector3(cameraTarget.position.x, topBlock.transform.position.y, cameraTarget.position.z);
+        }
+        else if (currentBlock != null)
+        {
+            desiredPos = new Vector3(cameraTarget.position.x, currentBlock.transform.position.y, cameraTarget.position.z);
+        }
+
+        // Smoothly lerp the cameraTarget's Y only
+        cameraTarget.position = Vector3.Lerp(cameraTarget.position, desiredPos, Time.deltaTime * cameraLerpSpeed);
+    }
+
+    // Helper so Block script can set manager.currentBlock to null when it starts falling (if needed)
+    public void NotifyBlockBecameActive(GameObject block)
+    {
+        if (block == currentBlock) return;
+        currentBlock = block;
+    }
+
+    // Utility: if you want Block to tell manager the block is no longer active (after Drop)
+    public void NotifyBlockDropped()
+    {
+        currentBlock = null;
     }
 }
