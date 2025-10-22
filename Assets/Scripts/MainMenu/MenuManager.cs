@@ -88,69 +88,6 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    /*public void UFOFlyIntoButton(GameObject targetPanel)
-    {
-        if (ufo == null || targetPanel == null) return;
-
-        // Detect which button triggered the click
-        GameObject clickedButton = EventSystem.current.currentSelectedGameObject;
-        if (clickedButton == null) return;
-
-        Transform targetButton = clickedButton.transform;
-
-        ///======
-        Button buttonComponent = clickedButton.GetComponent<Button>();
-
-        // Call glow here – right before flight starts
-        if (buttonComponent != null)
-        {
-            GlowButtonOutline(buttonComponent);
-        }
-        ///======
-
-        ufo.GetComponent<Animator>().enabled = true;
-
-        // Make sure UFO is visible
-        ufo.gameObject.SetActive(true);
-
-        // Stop any previous animation
-        ufo.DOKill();
-
-        // Create the flying sequence
-        Sequence seq = DOTween.Sequence();
-
-        // Move UFO toward the button’s position
-        RectTransform ufoRect = ufo.GetComponent<RectTransform>();
-        RectTransform buttonRect = targetButton.GetComponent<RectTransform>();
-
-        // Animate UFO to the button’s anchored position
-        seq.Append(ufoRect.DOAnchorPos(buttonRect.anchoredPosition, ufoFlyDuration).SetEase(ufoFlyEase));
-
-        // Optionally scale UFO to simulate “entering” the button
-        seq.Join(ufo.DOScale(0.3f, ufoFlyDuration * 0.8f));
-        seq.Join(ufoParticle.DOScale(0.3f, ufoFlyDuration * 0.8f));
-
-
-        // After UFO disappears → show the new panel
-        seq.OnComplete(() =>
-        {
-            ufo.localScale = Vector3.one; // Reset for next time
-            ufo.gameObject.SetActive(false);
-
-            // Show the next panel
-            ShowPanel(targetPanel);
-        });
-    }
-
-    public void GlowButtonOutline(Button button)
-    {
-        Outline outline = button.GetComponent<Outline>();
-        if (outline == null) outline = button.gameObject.AddComponent<Outline>();
-
-        outline.effectColor = Color.cyan;
-        outline.DOFade(1f, 0.3f).From(0f).SetLoops(2, LoopType.Yoyo);
-    }*/
-
     public void UFOFlyIntoButton(GameObject targetPanel)
     {
         if (isUFOFlying) return;    // <-- prevents double press
@@ -193,7 +130,7 @@ public class MenuManager : MonoBehaviour
         seq.Append(ufoRect.DOAnchorPos(buttonRect.anchoredPosition, ufoFlyDuration).SetEase(ufoFlyEase));
 
         // Scale down UFO and its particles while flying
-        seq.Join(ufo.DOScale(0.3f, ufoFlyDuration * 0.8f));
+        seq.Join(ufo.DOScale(0.5f, ufoFlyDuration * 0.8f));
         seq.Join(ufoParticle.DOScale(100f, ufoFlyDuration * 0.8f));
 
         // When flight finishes
