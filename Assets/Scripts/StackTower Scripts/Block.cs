@@ -5,18 +5,22 @@ public class Block : MonoBehaviour
     private Rigidbody2D rb;
     private bool hasLanded = false;
     private bool isMoving = false;
-    private BlockManager manager;
-
-    [Header("Movement Settings")]
-    public float moveSpeed = 2f;
-    public float moveRange = 2.5f;
-
+    private bool hasDropped = false;
+    private float moveDirection = 1f;
+    private float moveRange = 2.5f;
+    private float moveSpeed = 2f;
     private Vector3 startPos;
+    private BlockManager manager;
+    private bool isFirstBlock = false;
+
+    private static int blockCount = 0; // Track how many blocks have landed
+    private GameManagerUI uiManager;   // Reference to UI manager
 
     public void Initialize(BlockManager blockManager, bool autoDrop = false)
     {
         manager = blockManager;
         rb = GetComponent<Rigidbody2D>();
+        uiManager = FindObjectOfType<GameManagerUI>(); // ? Automatically find UI manager
 
         if (rb == null)
         {
@@ -24,58 +28,76 @@ public class Block : MonoBehaviour
             return;
         }
 
-        gameObject.tag = "Block";
         startPos = transform.position;
-
-        // Set up the Rigidbody2D initially
-        rb.isKinematic = true; // Start as kinematic to allow movement via transform
-        rb.gravityScale = 0f;
+        isFirstBlock = autoDrop;
 
         if (autoDrop)
         {
-            // First block drops immediately without lateral movement
-            rb.isKinematic = false;
+            // First block falls automatically
+            rb.bodyType = RigidbodyType2D.Dynamic;
             rb.gravityScale = 1f;
-            isMoving = false;
+            Debug.Log("First block auto-dropped.");
         }
         else
         {
-            // Subsequent blocks move laterally
+            // Subsequent blocks move left-right before drop
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.gravityScale = 0f;
             isMoving = true;
+
+            Debug.Log("New moving block spawned — waiting for player input to drop.");
         }
     }
 
-    void Update()
+    private void Update()
     {
-        if (isMoving && !hasLanded)
+        if (isMoving && !hasDropped)
         {
-            // Horizontal movement
-            float x = Mathf.PingPong(Time.time * moveSpeed, moveRange * 2) - moveRange;
-            transform.position = new Vector3(startPos.x + x, transform.position.y, transform.position.z);
-        }
+            transform.position += Vector3.right * moveDirection * moveSpeed * Time.deltaTime;
 
-        // Drop the block on touch/click
-        if (isMoving && !hasLanded && Input.GetMouseButtonDown(0))
-        {
-            rb.isKinematic = false; // Disable kinematic so physics (gravity) takes over
-            rb.gravityScale = 1f;
-            isMoving = false; // Stop horizontal movement
+            if (Mathf.Abs(transform.position.x - startPos.x) >= moveRange)
+                moveDirection *= -1;
+
+            if (Input.GetMouseButtonDown(0))
+                DropBlock();
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    private void DropBlock()
     {
-        if (hasLanded) return;
+        hasDropped = true;
+        isMoving = false;
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        rb.gravityScale = 1f;
+        Debug.Log("Block dropped by player.");
+    }
 
-        if (collision.collider.CompareTag("Ground") || collision.collider.CompareTag("Block"))
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // The main condition (not landed yet, and collided with Ground or Block) remains the same
+        if (!hasLanded && (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Block")))
         {
             hasLanded = true;
-            rb.velocity = Vector2.zero;
-            rb.angularVelocity = 0f; // Prevent rotation/tilting
-            rb.isKinematic = true; // ? CRITICAL FIX: Lock the block in place to prevent physics jittering
+            blockCount++;
 
-            // Notify the manager
-            manager.OnBlockLanded(gameObject);
+            Debug.Log($"Block {blockCount} landed.");
+
+            
+            if (blockCount > 1 && collision.gameObject.CompareTag("Ground"))
+            {
+                if (uiManager != null)
+                {
+                    uiManager.ShowGameOver();
+                    Debug.Log("Game Over triggered: Block landed directly on Ground.");
+                }
+                else
+                {
+                    Debug.LogError("UI Manager not found in scene!");
+                }
+            }
+
+            // Inform the manager that a block landed (still needed for spawning logic)
+            manager.OnBlockLanded(this.transform);
         }
     }
 }

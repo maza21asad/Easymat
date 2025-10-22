@@ -1,63 +1,68 @@
 using UnityEngine;
-using Cinemachine;
+using System.Collections;
 
 public class BlockManager : MonoBehaviour
 {
+    [Header("References")]
     public GameObject blockPrefab;
     public Transform spawnPoint;
-    public CinemachineVirtualCamera virtualCamera;
+    public float spawnHeightOffset = 3f;   // Distance above top block for spawning
+    public CameraTarget cameraTarget;
 
-    private GameObject currentBlock;
+    private int blockCount = 0;
+    private bool canSpawn = true;
+    private Transform topBlock;
 
-    void Start()
+    private void Start()
     {
-        // Spawn first block that will automatically fall
+        if (blockPrefab == null || spawnPoint == null)
+        {
+            Debug.LogError("BlockManager: Missing blockPrefab or spawnPoint reference!");
+            return;
+        }
+
         SpawnBlock(autoDrop: true);
     }
 
-    public void OnBlockLanded(GameObject landedBlock)
+    public void OnBlockLanded(Transform landedBlock)
     {
-        // 1. CRITICAL FIX: Stop the camera from following the landed block.
-        // This is important to prevent the camera from shaking or fighting
-        // between the old and new block positions.
-        if (virtualCamera != null && virtualCamera.Follow == landedBlock.transform)
-        {
-            virtualCamera.Follow = null;
-        }
+        topBlock = landedBlock;
+        if (canSpawn) StartCoroutine(SpawnNextBlock());
+    }
 
-        // 2. Move spawn point above the landed block
-        // Adjust the Y-offset to be based on the landed block's top edge
-        // A value of '2f' seems too high based on the video (blocks look about 1 unit tall).
-        // Let's use 1.0f as an estimate for 1 unit above the block's center, adjust in Inspector.
-        // A better approach would be to calculate it based on the block's size.
-        // Assuming block has a sprite/box collider of Y size ~1.5 units, let's use a conservative 1.6f.
-        Vector3 newPos = landedBlock.transform.position + new Vector3(0, 1.6f, 0);
-        spawnPoint.position = newPos;
-
-        // 3. Spawn next moving block
+    private IEnumerator SpawnNextBlock()
+    {
+        canSpawn = false;
+        yield return new WaitForSeconds(0.6f);
         SpawnBlock(autoDrop: false);
+        canSpawn = true;
     }
 
     private void SpawnBlock(bool autoDrop)
     {
-        if (blockPrefab == null || spawnPoint == null)
+        blockCount++;
+
+        // Move spawn point above the current top block
+        if (topBlock != null)
         {
-            Debug.LogError("Block Prefab or Spawn Point not assigned!");
-            return;
+            spawnPoint.position = new Vector3(topBlock.position.x, topBlock.position.y + spawnHeightOffset, topBlock.position.z);
         }
 
         GameObject newBlock = Instantiate(blockPrefab, spawnPoint.position, Quaternion.identity);
-        currentBlock = newBlock;
+        newBlock.tag = "Block";
 
-        // Set camera follow target
-        if (virtualCamera != null)
-            virtualCamera.Follow = newBlock.transform; // Camera now follows the new block
-
-        // Initialize block
         Block blockScript = newBlock.GetComponent<Block>();
-        if (blockScript != null)
-            blockScript.Initialize(this, autoDrop);
+        if (blockScript != null) blockScript.Initialize(this, autoDrop);
+
+        // Update camera to follow the new block
+        if (cameraTarget != null)
+        {
+            cameraTarget.SetTopBlock(newBlock.transform);
+        }
+
+        if (autoDrop)
+            Debug.Log($"[BlockManager] Spawned foundation block #{blockCount} (auto-drop).");
         else
-            Debug.LogError("Block prefab missing 'Block' script!");
+            Debug.Log($"[BlockManager] Spawned moving block #{blockCount} at {spawnPoint.position} — waiting for player to drop.");
     }
 }
