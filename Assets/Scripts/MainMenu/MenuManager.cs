@@ -22,6 +22,7 @@ public class MenuManager : MonoBehaviour
     //public Ease ufoFlyEase = Ease.InBounce;
     public Ease ufoFlyEase = Ease.InOutQuad;
 
+    private bool isUFOFlying = false;
     private Vector3 ufoStartPosition;
     private Vector3 ufoStartParScale;
     private Vector3 ufoStartScale;
@@ -152,7 +153,11 @@ public class MenuManager : MonoBehaviour
 
     public void UFOFlyIntoButton(GameObject targetPanel)
     {
+        if (isUFOFlying) return;    // <-- prevents double press
+
         if (ufo == null || targetPanel == null) return;
+
+        isUFOFlying = true; // <-- lock animation
 
         // Detect which button triggered the click
         GameObject clickedButton = EventSystem.current.currentSelectedGameObject;
@@ -189,7 +194,7 @@ public class MenuManager : MonoBehaviour
 
         // Scale down UFO and its particles while flying
         seq.Join(ufo.DOScale(0.3f, ufoFlyDuration * 0.8f));
-        seq.Join(ufoParticle.DOScale(0.3f, ufoFlyDuration * 0.8f));
+        seq.Join(ufoParticle.DOScale(100f, ufoFlyDuration * 0.8f));
 
         // When flight finishes
         seq.OnComplete(() =>
@@ -210,6 +215,8 @@ public class MenuManager : MonoBehaviour
                         outline.DOFade(0f, 0.4f).OnComplete(() => outline.enabled = false);
                     });
             }
+
+            isUFOFlying = false;   //<-- ✅ IMPORTANT (unlock again here)
         });
     }
 
