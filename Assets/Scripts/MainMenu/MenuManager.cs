@@ -130,7 +130,7 @@ public class MenuManager : MonoBehaviour
         seq.Append(ufoRect.DOAnchorPos(buttonRect.anchoredPosition, ufoFlyDuration).SetEase(ufoFlyEase));
 
         // Scale down UFO and its particles while flying
-        seq.Join(ufo.DOScale(0.5f, ufoFlyDuration * 0.8f));
+        seq.Join(ufo.DOScale(0.4f, ufoFlyDuration * 0.8f));
         seq.Join(ufoParticle.DOScale(100f, ufoFlyDuration * 0.8f));
 
         // When flight finishes
