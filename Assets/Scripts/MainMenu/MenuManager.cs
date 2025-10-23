@@ -16,10 +16,11 @@ public class MenuManager : MonoBehaviour
 
     private Stack<GameObject> panelHistory = new Stack<GameObject>();
 
+    private CanvasGroup currentPanelCanvasGroup;
+
     [Header("UFO Settings")]
     public Transform ufo, ufoParticle;
     public float ufoFlyDuration = 1.2f;
-    //public Ease ufoFlyEase = Ease.InBounce;
     public Ease ufoFlyEase = Ease.InOutQuad;
 
     private bool isUFOFlying = false;
@@ -130,7 +131,7 @@ public class MenuManager : MonoBehaviour
         seq.Append(ufoRect.DOAnchorPos(buttonRect.anchoredPosition, ufoFlyDuration).SetEase(ufoFlyEase));
 
         // Scale down UFO and its particles while flying
-        seq.Join(ufo.DOScale(0.4f, ufoFlyDuration * 0.8f));
+        seq.Join(ufo.DOScale(0.3f, ufoFlyDuration * 0.8f));
         seq.Join(ufoParticle.DOScale(100f, ufoFlyDuration * 0.8f));
 
         // When flight finishes
@@ -153,7 +154,7 @@ public class MenuManager : MonoBehaviour
                     });
             }
 
-            isUFOFlying = false;   //<-- ✅ IMPORTANT (unlock again here)
+            isUFOFlying = false;   
         });
     }
 
@@ -211,7 +212,7 @@ public class MenuManager : MonoBehaviour
                         ResetUFOPosition();
                         ufo.GetComponent<Animator>().enabled = false;
                     }
-                }); 
+                });
         }
     }
 
