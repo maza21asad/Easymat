@@ -16,8 +16,6 @@ public class MenuManager : MonoBehaviour
 
     private Stack<GameObject> panelHistory = new Stack<GameObject>();
 
-    private CanvasGroup currentPanelCanvasGroup;
-
     [Header("UFO Settings")]
     public Transform ufo, ufoParticle;
     public float ufoFlyDuration = 1.2f;
@@ -68,12 +66,13 @@ public class MenuManager : MonoBehaviour
         if (canvasGroup == null)
             canvasGroup = panel.AddComponent<CanvasGroup>();
 
-        panel.transform.localScale = Vector3.one * 0.8f;
+        panel.transform.localScale = Vector3.one * 0.4f;
         canvasGroup.alpha = 0f;
         panel.SetActive(true);
 
         // Animate both scale & fade
         panel.transform.DOScale(1f, 0.4f).SetEase(Ease.OutBack);
+        //panel.transform.DOScale(1f, 0.4f).SetEase(Ease.OutExpo);
         canvasGroup.DOFade(1f, 0.3f);
     }
 
@@ -91,72 +90,65 @@ public class MenuManager : MonoBehaviour
 
     public void UFOFlyIntoButton(GameObject targetPanel)
     {
-        if (isUFOFlying) return;    // <-- prevents double press
-
+        if (isUFOFlying) return;
         if (ufo == null || targetPanel == null) return;
 
-        isUFOFlying = true; // <-- lock animation
+        isUFOFlying = true;
 
-        // Detect which button triggered the click
+        // Detect clicked button
         GameObject clickedButton = EventSystem.current.currentSelectedGameObject;
         if (clickedButton == null) return;
 
         Transform targetButton = clickedButton.transform;
-        Button buttonComponent = clickedButton.GetComponent<Button>();
 
-        // --- 🌟 Start glow and keep it until next panel shows ---
-        Outline outline = null;
-        if (buttonComponent != null)
+        // FIND THE GLOW OBJECT
+        Transform glow = targetButton.Find("GlowSuper");
+
+        // Play glow appear animation
+        if (glow != null)
         {
-            outline = buttonComponent.GetComponent<Outline>();
-            if (outline == null) outline = buttonComponent.gameObject.AddComponent<Outline>();
-            outline.effectColor = Color.cyan;
-            outline.effectDistance = new Vector2(5, 5);
-            outline.enabled = true;
+            glow.gameObject.SetActive(true);
+            glow.localScale = Vector3.zero;  // start small
+
+            glow.DOScale(80f, 0.65f)
+                .SetEase(Ease.OutFlash);
         }
 
+        // UFO Animation
         ufo.GetComponent<Animator>().enabled = true;
-
-        // Make sure UFO is visible
         ufo.gameObject.SetActive(true);
         ufo.DOKill();
 
-        // Create the flying sequence
         Sequence seq = DOTween.Sequence();
 
         RectTransform ufoRect = ufo.GetComponent<RectTransform>();
         RectTransform buttonRect = targetButton.GetComponent<RectTransform>();
 
-        // Move UFO toward the button’s position
         seq.Append(ufoRect.DOAnchorPos(buttonRect.anchoredPosition, ufoFlyDuration).SetEase(ufoFlyEase));
-
-        // Scale down UFO and its particles while flying
         seq.Join(ufo.DOScale(0.3f, ufoFlyDuration * 0.8f));
         seq.Join(ufoParticle.DOScale(100f, ufoFlyDuration * 0.8f));
 
-        // When flight finishes
         seq.OnComplete(() =>
         {
-            ufo.localScale = Vector3.one; // Reset for next time
+            ufo.localScale = Vector3.one;
             ufo.gameObject.SetActive(false);
 
             // Show the next panel
             ShowPanel(targetPanel);
 
-            // ✨ Disable glow once the panel appears
-            if (outline != null)
+            // Fade glow out after panel appears
+            if (glow != null)
             {
-                DOTween.Sequence()
-                    .AppendInterval(0.4f) // small delay to match panel fade
-                    .AppendCallback(() =>
-                    {
-                        outline.DOFade(0f, 0.4f).OnComplete(() => outline.enabled = false);
-                    });
+                glow.DOScale(0f, 0.25f)
+                    .SetEase(Ease.InBack)
+                    .SetDelay(0.3f)
+                    .OnComplete(() => glow.gameObject.SetActive(false));
             }
 
-            isUFOFlying = false;   
+            isUFOFlying = false;
         });
     }
+
 
 
     public void CloseCurrentPanel()
