@@ -42,11 +42,17 @@ public class BlockManager : MonoBehaviour
     {
         blockCount++;
 
-        // Move spawn point above the current top block
+        float middleX = 0f; // Fixed X position for middle
+        float spawnY = spawnHeightOffset; // Default in case topBlock is null
+        float spawnZ = 0f; // Or whatever Z you want
+
         if (topBlock != null)
         {
-            spawnPoint.position = new Vector3(topBlock.position.x, topBlock.position.y + spawnHeightOffset, topBlock.position.z);
+            spawnY = topBlock.position.y + spawnHeightOffset;
+            spawnZ = topBlock.position.z;
         }
+
+        spawnPoint.position = new Vector3(middleX, spawnY, spawnZ);
 
         GameObject newBlock = Instantiate(blockPrefab, spawnPoint.position, Quaternion.identity);
         newBlock.tag = "Block";
@@ -54,7 +60,6 @@ public class BlockManager : MonoBehaviour
         Block blockScript = newBlock.GetComponent<Block>();
         if (blockScript != null) blockScript.Initialize(this, autoDrop);
 
-        // Update camera to follow the new block
         if (cameraTarget != null)
         {
             cameraTarget.SetTopBlock(newBlock.transform);

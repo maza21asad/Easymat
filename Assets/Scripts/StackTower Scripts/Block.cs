@@ -11,16 +11,19 @@ public class Block : MonoBehaviour
     private float moveSpeed = 2f;
     private Vector3 startPos;
     private BlockManager manager;
-    private bool isFirstBlock = false;
 
-    private static int blockCount = 0; // Track how many blocks have landed
-    private GameManagerUI uiManager;   // Reference to UI manager
+    private int blockCount = 0;
+    private GameManagerUI uiManager;
+
+    private float windForce = 0f; // Horizontal wind force
+    public GameObject windArrow;
+
 
     public void Initialize(BlockManager blockManager, bool autoDrop = false)
     {
         manager = blockManager;
         rb = GetComponent<Rigidbody2D>();
-        uiManager = FindObjectOfType<GameManagerUI>(); // ? Automatically find UI manager
+        uiManager = FindObjectOfType<GameManagerUI>();
 
         if (rb == null)
         {
@@ -29,25 +32,44 @@ public class Block : MonoBehaviour
         }
 
         startPos = transform.position;
-        isFirstBlock = autoDrop;
+
+        // Random wind force between -1.5 to 1.5 (left or right)
+        windForce = Random.Range(-3f, 3f);
+
+        // Debug wind direction in console
+        if (windForce > 0)
+            Debug.Log($"Wind is blowing RIGHT with force {windForce}");
+        else if (windForce < 0)
+            Debug.Log($"Wind is blowing LEFT with force {windForce}");
+        else
+            Debug.Log("No wind for this block.");
 
         if (autoDrop)
         {
-            // First block falls automatically
             rb.bodyType = RigidbodyType2D.Dynamic;
             rb.gravityScale = 1f;
-            Debug.Log("First block auto-dropped.");
         }
         else
         {
-            // Subsequent blocks move left-right before drop
             rb.bodyType = RigidbodyType2D.Kinematic;
             rb.gravityScale = 0f;
             isMoving = true;
-
-            Debug.Log("New moving block spawned — waiting for player input to drop.");
         }
     }
+
+
+    public void ShowWindIndicator()
+    {
+        if (windArrow != null)
+        {
+            windArrow.SetActive(true);
+            // Rotate arrow based on wind direction
+            if (windForce > 0) windArrow.transform.rotation = Quaternion.Euler(0, 0, 0);   // right
+            else if (windForce < 0) windArrow.transform.rotation = Quaternion.Euler(0, 0, 180); // left
+            else windArrow.SetActive(false); // no wind
+        }
+    }
+
 
     private void Update()
     {
@@ -69,12 +91,24 @@ public class Block : MonoBehaviour
         isMoving = false;
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = 1f;
-        Debug.Log("Block dropped by player.");
+
+        // Apply horizontal wind force
+        rb.AddForce(new Vector2(windForce, 0f), ForceMode2D.Impulse);
+
+        // Debug when block is dropped
+        if (windForce > 0)
+            Debug.Log($"Dropped block: wind pushed RIGHT with force {windForce}");
+        else if (windForce < 0)
+            Debug.Log($"Dropped block: wind pushed LEFT with force {windForce}");
+        else
+            Debug.Log("Dropped block: no wind applied.");
+
+
+        if (windArrow != null) windArrow.SetActive(false);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // The main condition (not landed yet, and collided with Ground or Block) remains the same
         if (!hasLanded && (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Block")))
         {
             hasLanded = true;
@@ -82,21 +116,11 @@ public class Block : MonoBehaviour
 
             Debug.Log($"Block {blockCount} landed.");
 
-            
             if (blockCount > 1 && collision.gameObject.CompareTag("Ground"))
             {
-                if (uiManager != null)
-                {
-                    uiManager.ShowGameOver();
-                    Debug.Log("Game Over triggered: Block landed directly on Ground.");
-                }
-                else
-                {
-                    Debug.LogError("UI Manager not found in scene!");
-                }
+                if (uiManager != null) uiManager.ShowGameOver();
             }
 
-            // Inform the manager that a block landed (still needed for spawning logic)
             manager.OnBlockLanded(this.transform);
         }
     }
