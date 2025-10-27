@@ -19,6 +19,7 @@ public class Block : MonoBehaviour
     public GameObject windArrow;
 
 
+
     public void Initialize(BlockManager blockManager, bool autoDrop = false)
     {
         manager = blockManager;
@@ -116,7 +117,7 @@ public class Block : MonoBehaviour
 
             Debug.Log($"Block {blockCount} landed.");
 
-            if (blockCount > 1 && collision.gameObject.CompareTag("Ground"))
+            if (blockCount > 10 && collision.gameObject.CompareTag("Ground"))
             {
                 if (uiManager != null) uiManager.ShowGameOver();
             }
