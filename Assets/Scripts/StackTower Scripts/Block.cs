@@ -18,8 +18,6 @@ public class Block : MonoBehaviour
     private float windForce = 0f; // Horizontal wind force
     public GameObject windArrow;
 
-
-
     public void Initialize(BlockManager blockManager, bool autoDrop = false)
     {
         manager = blockManager;
@@ -34,16 +32,23 @@ public class Block : MonoBehaviour
 
         startPos = transform.position;
 
-        // Random wind force between -1.5 to 1.5 (left or right)
-        windForce = Random.Range(-3f, 3f);
+        // ? Apply wind only if manager.windEnabled is true
+        if (manager.windEnabled)
+        {
+            windForce = Random.Range(-3f, 3f);
 
-        // Debug wind direction in console
-        if (windForce > 0)
-            Debug.Log($"Wind is blowing RIGHT with force {windForce}");
-        else if (windForce < 0)
-            Debug.Log($"Wind is blowing LEFT with force {windForce}");
+            if (windForce > 0)
+                Debug.Log($"??? Wind is blowing RIGHT with force {windForce}");
+            else if (windForce < 0)
+                Debug.Log($"??? Wind is blowing LEFT with force {windForce}");
+            else
+                Debug.Log("No wind for this block.");
+        }
         else
-            Debug.Log("No wind for this block.");
+        {
+            windForce = 0f;
+            Debug.Log("? Wind disabled — calm weather mode (no wind yet).");
+        }
 
         if (autoDrop)
         {
@@ -58,19 +63,19 @@ public class Block : MonoBehaviour
         }
     }
 
-
     public void ShowWindIndicator()
     {
         if (windArrow != null)
         {
             windArrow.SetActive(true);
-            // Rotate arrow based on wind direction
-            if (windForce > 0) windArrow.transform.rotation = Quaternion.Euler(0, 0, 0);   // right
-            else if (windForce < 0) windArrow.transform.rotation = Quaternion.Euler(0, 0, 180); // left
-            else windArrow.SetActive(false); // no wind
+            if (windForce > 0)
+                windArrow.transform.rotation = Quaternion.Euler(0, 0, 0);    // right
+            else if (windForce < 0)
+                windArrow.transform.rotation = Quaternion.Euler(0, 0, 180);  // left
+            else
+                windArrow.SetActive(false); // no wind
         }
     }
-
 
     private void Update()
     {
@@ -93,19 +98,23 @@ public class Block : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = 1f;
 
-        // Apply horizontal wind force
-        rb.AddForce(new Vector2(windForce, 0f), ForceMode2D.Impulse);
+        // ? Apply horizontal wind only if active
+        if (manager.windEnabled && Mathf.Abs(windForce) > 0f)
+        {
+            rb.AddForce(new Vector2(windForce, 0f), ForceMode2D.Impulse);
 
-        // Debug when block is dropped
-        if (windForce > 0)
-            Debug.Log($"Dropped block: wind pushed RIGHT with force {windForce}");
-        else if (windForce < 0)
-            Debug.Log($"Dropped block: wind pushed LEFT with force {windForce}");
+            if (windForce > 0)
+                Debug.Log($"?? Dropped block: wind pushed RIGHT with force {windForce}");
+            else
+                Debug.Log($"?? Dropped block: wind pushed LEFT with force {windForce}");
+        }
         else
-            Debug.Log("Dropped block: no wind applied.");
+        {
+            Debug.Log("?? Dropped block: calm weather (no wind applied).");
+        }
 
-
-        if (windArrow != null) windArrow.SetActive(false);
+        if (windArrow != null)
+            windArrow.SetActive(false);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -115,11 +124,13 @@ public class Block : MonoBehaviour
             hasLanded = true;
             blockCount++;
 
-            Debug.Log($"Block {blockCount} landed.");
+            Debug.Log($"?? Block {blockCount} landed.");
 
+            // Optional: basic game over logic (keep as you wish)
             if (blockCount > 10 && collision.gameObject.CompareTag("Ground"))
             {
-                if (uiManager != null) uiManager.ShowGameOver();
+                if (uiManager != null)
+                    uiManager.ShowGameOver();
             }
 
             manager.OnBlockLanded(this.transform);

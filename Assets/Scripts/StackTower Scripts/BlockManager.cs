@@ -8,7 +8,7 @@ public class BlockManager : MonoBehaviour
     [Header("References")]
     public GameObject blockPrefab;
     public Transform spawnPoint;
-    public float spawnHeightOffset = 3f;   // Distance above top block for spawning
+    public float spawnHeightOffset = 3f;
     public CameraTarget cameraTarget;
 
     private int blockCount = 0;
@@ -16,14 +16,18 @@ public class BlockManager : MonoBehaviour
     private Transform topBlock;
 
     [Header("UI Panels")]
-    public GameObject newPanel; // Assign in Inspector
+    public GameObject newPanel;
     public GameObject gamePanel;
 
     [Header("Timer Settings")]
-    public float gameTime = 60f; // 30 seconds
+    public float gameTime = 60f;
     private float timer;
-    public TMP_Text timerText; // assign in Inspector (TextMeshProUGUI)
+    public TMP_Text timerText;
     private bool isTimerRunning = false;
+
+    [Header("Wind Settings")]
+    public bool windEnabled = false;   // ? Wind is OFF at start
+    public int windStartAfter = 10;    // ? Wind starts after 10 blocks
 
     public CinemachineVirtualCamera virtualCamera;
 
@@ -37,20 +41,18 @@ public class BlockManager : MonoBehaviour
 
         SpawnBlock(autoDrop: true);
 
-        // ? Initialize and start timer
         timer = gameTime;
         isTimerRunning = true;
     }
 
     private void Update()
     {
-        // ? Update Timer
         if (isTimerRunning)
         {
             timer -= Time.deltaTime;
 
             if (timerText != null)
-                timerText.text =  Mathf.Ceil(timer).ToString();
+                timerText.text = Mathf.Ceil(timer).ToString();
 
             if (timer <= 0)
             {
@@ -65,7 +67,14 @@ public class BlockManager : MonoBehaviour
     {
         topBlock = landedBlock;
 
-        // ? When 5 blocks are placed, switch panels
+        // ? When wind should start
+        if (!windEnabled && blockCount >= windStartAfter)
+        {
+            windEnabled = true;
+            Debug.Log($"??? Wind system activated after {blockCount} blocks!");
+        }
+
+        // ? When 5 blocks are placed, switch panels (your previous condition)
         if (blockCount >= 5)
         {
             if (newPanel != null && !newPanel.activeSelf)
@@ -98,7 +107,7 @@ public class BlockManager : MonoBehaviour
         blockCount++;
         Camofsetadd();
 
-        float middleX = 0f; // Fixed X position for middle
+        float middleX = 0f;
         float spawnY = spawnHeightOffset;
         float spawnZ = 0f;
 
@@ -115,32 +124,22 @@ public class BlockManager : MonoBehaviour
 
         Block blockScript = newBlock.GetComponent<Block>();
         if (blockScript != null)
-            blockScript.Initialize(this, autoDrop);
+            blockScript.Initialize(this, autoDrop); // Pass manager reference
 
         if (cameraTarget != null)
             cameraTarget.SetTopBlock(newBlock.transform);
-
-        if (autoDrop)
-            Debug.Log($"[BlockManager] Spawned foundation block #{blockCount} (auto-drop).");
-        else
-            Debug.Log($"[BlockManager] Spawned moving block #{blockCount} at {spawnPoint.position} — waiting for player to drop.");
     }
 
-    // ? Adjust Cinemachine camera offset smoothly as tower grows
     void Camofsetadd()
     {
         virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_TrackedObjectOffset.y += 0.4f;
     }
 
-    // ? Called when timer ends
     private void EndGame()
     {
         Debug.Log("? Time’s up! Game Over.");
-
-        // Optional: Disable gameplay
         if (gamePanel != null)
             gamePanel.SetActive(false);
-
         if (newPanel != null)
             newPanel.SetActive(true);
     }
