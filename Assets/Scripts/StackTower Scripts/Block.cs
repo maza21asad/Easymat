@@ -12,9 +12,6 @@ public class Block : MonoBehaviour
     private Vector3 startPos;
     private BlockManager manager;
 
-    private int blockCount = 0;
-    private GameManagerUI uiManager;
-
     private float windForce = 0f; // Horizontal wind force
     public GameObject windArrow;
 
@@ -22,7 +19,6 @@ public class Block : MonoBehaviour
     {
         manager = blockManager;
         rb = GetComponent<Rigidbody2D>();
-        uiManager = FindObjectOfType<GameManagerUI>();
 
         if (rb == null)
         {
@@ -32,7 +28,7 @@ public class Block : MonoBehaviour
 
         startPos = transform.position;
 
-        // ? Apply wind only if manager.windEnabled is true
+        // Apply wind only if manager.windEnabled is true
         if (manager.windEnabled)
         {
             windForce = Random.Range(-3f, 3f);
@@ -47,7 +43,7 @@ public class Block : MonoBehaviour
         else
         {
             windForce = 0f;
-            Debug.Log("? Wind disabled — calm weather mode (no wind yet).");
+            Debug.Log("?? Wind disabled — calm weather mode (no wind yet).");
         }
 
         if (autoDrop)
@@ -98,7 +94,7 @@ public class Block : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = 1f;
 
-        // ? Apply horizontal wind only if active
+        // Apply horizontal wind only if active
         if (manager.windEnabled && Mathf.Abs(windForce) > 0f)
         {
             rb.AddForce(new Vector2(windForce, 0f), ForceMode2D.Impulse);
@@ -119,20 +115,22 @@ public class Block : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!hasLanded && (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Block")))
+        // Always check for ground collision
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            // ? Allow only the very first block to touch ground safely
+            if (manager != null && manager.GetBlockCount() > 1)
+            {
+                Debug.Log("?? Block touched the ground — GAME OVER!");
+                manager.EndGame();
+                return;
+            }
+        }
+
+        // Normal stacking logic
+        if (!hasLanded && collision.gameObject.CompareTag("Block"))
         {
             hasLanded = true;
-            blockCount++;
-
-            Debug.Log($"?? Block {blockCount} landed.");
-
-            // Optional: basic game over logic (keep as you wish)
-            if (blockCount > 10 && collision.gameObject.CompareTag("Ground"))
-            {
-                if (uiManager != null)
-                    uiManager.ShowGameOver();
-            }
-
             manager.OnBlockLanded(this.transform);
         }
     }

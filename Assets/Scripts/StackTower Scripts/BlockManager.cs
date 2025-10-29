@@ -16,8 +16,8 @@ public class BlockManager : MonoBehaviour
     private Transform topBlock;
 
     [Header("UI Panels")]
-    public GameObject newPanel;
-    public GameObject gamePanel;
+    public GameObject newPanel;    // Game Over Panel
+    public GameObject gamePanel;   // Game Panel
 
     [Header("Timer Settings")]
     public float gameTime = 60f;
@@ -26,8 +26,8 @@ public class BlockManager : MonoBehaviour
     private bool isTimerRunning = false;
 
     [Header("Wind Settings")]
-    public bool windEnabled = false;   // ? Wind is OFF at start
-    public int windStartAfter = 10;    // ? Wind starts after 10 blocks
+    public bool windEnabled = false;   // Wind is OFF at start
+    public int windStartAfter = 10;    // Wind starts after 10 blocks
 
     public CinemachineVirtualCamera virtualCamera;
 
@@ -58,7 +58,7 @@ public class BlockManager : MonoBehaviour
             {
                 isTimerRunning = false;
                 timerText.text = "Time: 0";
-                EndGame();
+                //EndGame();
             }
         }
     }
@@ -67,27 +67,11 @@ public class BlockManager : MonoBehaviour
     {
         topBlock = landedBlock;
 
-        // ? When wind should start
+        // When wind should start
         if (!windEnabled && blockCount >= windStartAfter)
         {
             windEnabled = true;
             Debug.Log($"??? Wind system activated after {blockCount} blocks!");
-        }
-
-        // ? When 5 blocks are placed, switch panels (your previous condition)
-        if (blockCount >= 5)
-        {
-            if (newPanel != null && !newPanel.activeSelf)
-            {
-                newPanel.SetActive(true);
-                Debug.Log("?? New panel enabled after 5 blocks!");
-            }
-
-            if (gamePanel != null && gamePanel.activeSelf)
-            {
-                gamePanel.SetActive(false);
-                Debug.Log("?? Game panel disabled.");
-            }
         }
 
         if (canSpawn)
@@ -135,12 +119,22 @@ public class BlockManager : MonoBehaviour
         virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_TrackedObjectOffset.y += 0.4f;
     }
 
-    private void EndGame()
+    public int GetBlockCount()
     {
-        Debug.Log("? Time’s up! Game Over.");
+        return blockCount;
+    }
+
+    public void EndGame()
+    {
+        Debug.Log("?? Game Over! A block hit the ground.");
+
         if (gamePanel != null)
             gamePanel.SetActive(false);
+
         if (newPanel != null)
             newPanel.SetActive(true);
+
+        canSpawn = false;
+        isTimerRunning = false;
     }
 }
