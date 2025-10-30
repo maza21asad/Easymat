@@ -11,6 +11,9 @@ public class BlockManager : MonoBehaviour
     public float spawnHeightOffset = 3f;
     public CameraTarget cameraTarget;
 
+    [Header("Holder")]
+    public Transform holder;  // Holder for moving blocks
+
     private int blockCount = 0;
     private bool canSpawn = true;
     private Transform topBlock;
@@ -39,7 +42,7 @@ public class BlockManager : MonoBehaviour
             return;
         }
 
-        SpawnBlock(autoDrop: true);
+        SpawnBlock(autoDrop: true); // First block will move like others
 
         timer = gameTime;
         isTimerRunning = true;
@@ -63,6 +66,31 @@ public class BlockManager : MonoBehaviour
         }
     }
 
+
+    private void LateUpdate()
+    {
+        UpdateHolderHeight();
+    }
+
+    private void UpdateHolderHeight()
+    {
+        if (holder != null && topBlock != null)
+        {
+            // Distance above top block
+            float offsetY = spawnHeightOffset - 0.5f;
+
+            // Smooth movement to avoid sudden jump
+            Vector3 targetPos = new Vector3(
+                holder.position.x,
+                topBlock.position.y + offsetY,
+                holder.position.z
+            );
+
+            holder.position = Vector3.Lerp(holder.position, targetPos, Time.deltaTime * 2f);
+        }
+    }
+
+
     public void OnBlockLanded(Transform landedBlock)
     {
         topBlock = landedBlock;
@@ -71,7 +99,7 @@ public class BlockManager : MonoBehaviour
         if (!windEnabled && blockCount >= windStartAfter)
         {
             windEnabled = true;
-            Debug.Log($"??? Wind system activated after {blockCount} blocks!");
+            Debug.Log($"Wind system activated after {blockCount} blocks!");
         }
 
         if (canSpawn)
@@ -91,17 +119,26 @@ public class BlockManager : MonoBehaviour
         blockCount++;
         Camofsetadd();
 
-        float middleX = 0f;
-        float spawnY = spawnHeightOffset;
-        float spawnZ = 0f;
-
-        if (topBlock != null)
+        // Holder logic
+        if (holder != null)
         {
-            spawnY = topBlock.position.y + spawnHeightOffset;
-            spawnZ = topBlock.position.z;
+            float yOffset = -0.7f; // move 0.5 units down
+            spawnPoint.position = new Vector3(holder.position.x, holder.position.y + yOffset, holder.position.z);
         }
+        else
+        {
+            float middleX = 0f;
+            float spawnY = spawnHeightOffset;
+            float spawnZ = 0f;
 
-        spawnPoint.position = new Vector3(middleX, spawnY, spawnZ);
+            if (topBlock != null)
+            {
+                spawnY = topBlock.position.y + spawnHeightOffset;
+                spawnZ = topBlock.position.z;
+            }
+
+            spawnPoint.position = new Vector3(middleX, spawnY, spawnZ);
+        }
 
         GameObject newBlock = Instantiate(blockPrefab, spawnPoint.position, Quaternion.identity);
         newBlock.tag = "Block";
@@ -126,7 +163,7 @@ public class BlockManager : MonoBehaviour
 
     public void EndGame()
     {
-        Debug.Log("?? Game Over! A block hit the ground.");
+        Debug.Log("Game Over! A block hit the ground.");
 
         if (gamePanel != null)
             gamePanel.SetActive(false);
