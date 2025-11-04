@@ -59,9 +59,22 @@ public class BlockManager : MonoBehaviour
 
             if (timer <= 0)
             {
+                /*isTimerRunning = false;
+                timerText.text = "Time: 0";
+                //EndGame();*/
+
                 isTimerRunning = false;
                 timerText.text = "Time: 0";
-                //EndGame();
+
+                // Time over ? show game over panel
+                if (gamePanel != null)
+                    gamePanel.SetActive(false);
+
+                if (newPanel != null)
+                    newPanel.SetActive(true);
+
+                canSpawn = false; // stop spawning blocks
+                Debug.Log("? Time's up! Game over triggered.");
             }
         }
     }
