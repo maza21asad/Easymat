@@ -70,37 +70,74 @@ public class Snake : MonoBehaviour
 
     }
 
+    //private void HandleInput()
+    //{
+    //    if (Input.GetKeyDown(KeyCode.UpArrow))
+    //    {
+    //        if (gridMoveDirection != Direction.Down)
+    //        {
+    //            gridMoveDirection = Direction.Up;
+    //        }
+    //    }
+    //    else if (Input.GetKeyDown(KeyCode.DownArrow))
+    //    {
+    //        if (gridMoveDirection != Direction.Up)
+    //        {
+    //            gridMoveDirection = Direction.Down;
+    //        }
+    //    }
+    //    else if (Input.GetKeyDown(KeyCode.LeftArrow))
+    //    {
+    //        if (gridMoveDirection != Direction.Right)
+    //        {
+    //            gridMoveDirection = Direction.Left;
+    //        }
+    //    }
+    //    else if (Input.GetKeyDown(KeyCode.RightArrow))
+    //    {
+    //        if (gridMoveDirection != Direction.Left)
+    //        {
+    //            gridMoveDirection = Direction.Right;
+    //        }
+    //    }
+    //}
+
     private void HandleInput()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        switch (SwipeInput.swipeDirection)
         {
-            if (gridMoveDirection != Direction.Down)
-            {
-                gridMoveDirection = Direction.Up;
-            }
+            case SwipeInput.SwipeDirection.Up:
+                if (gridMoveDirection != Direction.Down)
+                    gridMoveDirection = Direction.Up;
+                break;
+
+            case SwipeInput.SwipeDirection.Down:
+                if (gridMoveDirection != Direction.Up)
+                    gridMoveDirection = Direction.Down;
+                break;
+
+            case SwipeInput.SwipeDirection.Left:
+                if (gridMoveDirection != Direction.Right)
+                    gridMoveDirection = Direction.Left;
+                break;
+
+            case SwipeInput.SwipeDirection.Right:
+                if (gridMoveDirection != Direction.Left)
+                    gridMoveDirection = Direction.Right;
+                break;
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            if (gridMoveDirection != Direction.Up)
-            {
-                gridMoveDirection = Direction.Down;
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            if (gridMoveDirection != Direction.Right)
-            {
-                gridMoveDirection = Direction.Left;
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            if (gridMoveDirection != Direction.Left)
-            {
-                gridMoveDirection = Direction.Right;
-            }
-        }
+
+        // Keyboard input (optional for Editor)
+        if (Input.GetKeyDown(KeyCode.UpArrow) && gridMoveDirection != Direction.Down)
+            gridMoveDirection = Direction.Up;
+        else if (Input.GetKeyDown(KeyCode.DownArrow) && gridMoveDirection != Direction.Up)
+            gridMoveDirection = Direction.Down;
+        else if (Input.GetKeyDown(KeyCode.LeftArrow) && gridMoveDirection != Direction.Right)
+            gridMoveDirection = Direction.Left;
+        else if (Input.GetKeyDown(KeyCode.RightArrow) && gridMoveDirection != Direction.Left)
+            gridMoveDirection = Direction.Right;
     }
+
 
     private void HandleGridMovement()
     {
