@@ -7,7 +7,10 @@ public class GameOverWindow : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private Button playAgainButton;
-    [SerializeField] private Button exitButton;
+    //[SerializeField] private Button exitButton;
+    [SerializeField] private Button returnHomeButton;
+
+    [SerializeField] private string returnSceneName = "MainMenu";
 
     private void Start()
     {
@@ -19,8 +22,11 @@ public class GameOverWindow : MonoBehaviour
         if (playAgainButton != null)
             playAgainButton.onClick.AddListener(RestartGame);
 
-        if (exitButton != null)
-            exitButton.onClick.AddListener(ExitGame);
+        //if (exitButton != null)
+        //    exitButton.onClick.AddListener(ExitGame);
+
+        if (returnHomeButton != null)
+            returnHomeButton.onClick.AddListener(() => LoadScene(returnSceneName));
     }
 
     public void ShowGameOver()
@@ -43,5 +49,11 @@ public class GameOverWindow : MonoBehaviour
         Application.Quit();
         Debug.Log("Quit Game!");
     }
+
+    public void LoadScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
+
 }
 
