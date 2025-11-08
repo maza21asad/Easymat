@@ -53,7 +53,7 @@ public class Snake : MonoBehaviour
         // === Tail Code Start ===
         snakeTailObject = new GameObject("SnakeTail", typeof(SpriteRenderer));
         snakeTailRenderer = snakeTailObject.GetComponent<SpriteRenderer>();
-        snakeTailRenderer.sprite = GameAssets.Instance.snakeTailSprite;
+        //snakeTailRenderer.sprite = GameAssets.Instance.snakeTailSprite;
         snakeTailRenderer.sortingOrder = -100; // draw behind everything else
         snakeTailObject.transform.position = new Vector3(gridPosotion.x - 1, gridPosotion.y, 0);
         // === Tail Code End ===
