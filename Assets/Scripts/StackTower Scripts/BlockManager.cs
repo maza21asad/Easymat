@@ -1,7 +1,8 @@
-using UnityEngine;
-using System.Collections;
 using Cinemachine;
+using System.Collections;
 using TMPro;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 public class BlockManager : MonoBehaviour
 {
@@ -34,6 +35,15 @@ public class BlockManager : MonoBehaviour
 
     public CinemachineVirtualCamera virtualCamera;
 
+
+
+    public float moveSpeed = 1f;      // Speed of left-right movement
+    public float moveRange = 2f;      // Horizontal movement range
+
+    private Vector3 initialHolderPos; // starting position for left-right movement
+    private float moveTimer = 0f;
+
+
     private void Start()
     {
         if (blockPrefab == null || spawnPoint == null)
@@ -46,6 +56,8 @@ public class BlockManager : MonoBehaviour
 
         timer = gameTime;
         isTimerRunning = true;
+
+
     }
 
     private void Update()
@@ -82,10 +94,10 @@ public class BlockManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        UpdateHolderHeight();
+        UpdateHolderMovement();
     }
 
-    private void UpdateHolderHeight()
+    /*private void UpdateHolderHeight()
     {
         if (holder != null && topBlock != null)
         {
@@ -93,20 +105,53 @@ public class BlockManager : MonoBehaviour
             float offsetY = spawnHeightOffset - 0.5f;
 
             // Smooth movement to avoid sudden jump
-            Vector3 targetPos = new Vector3(
-                holder.position.x,
-                topBlock.position.y + offsetY,
-                holder.position.z
-            );
+            Vector3 targetPos = new Vector3(holder.position.x, topBlock.position.y + offsetY, holder.position.z);
+            holder.position = Vector3.Lerp(holder.position, targetPos, Time.deltaTime);
 
-            holder.position = Vector3.Lerp(holder.position, targetPos, Time.deltaTime * 2f);
+            Debug.Log($"Holder Current Y: {holder.position.y:F2}, Target Y: {targetPos.y:F2}, Top Block Y: {topBlock.position.y:F2}");
+        }
+    }*/
+
+    private void UpdateHolderMovement()
+    {
+        if (holder == null || topBlock == null) return;
+
+        // Horizontal: continuous sine
+        moveTimer += Time.deltaTime * moveSpeed;
+        float offsetX = Mathf.Sin(moveTimer) * moveRange;
+
+        // Vertical: smoothly follow tower, only upwards
+        float desiredY = topBlock.position.y + (spawnHeightOffset - 0.5f);
+        float targetY = holder.position.y;
+        if (desiredY > holder.position.y)
+        {
+            targetY = Mathf.Lerp(holder.position.y, desiredY, Time.deltaTime * 5f); // Increase factor for faster smoothness
+        }
+
+        // Apply position to holder (visual)
+        Vector3 newPos = new Vector3(
+            initialHolderPos.x + offsetX,
+            targetY,
+            holder.position.z
+        );
+        holder.position = newPos;
+
+        // --- Smooth follow for currently held block ---
+        if (topBlock != null && topBlock.CompareTag("wBlock"))
+        {
+            Vector3 blockTargetPos = new Vector3(newPos.x, newPos.y - 0.7f, newPos.z); // adjust offset
+            topBlock.position = Vector3.Lerp(topBlock.position, blockTargetPos, Time.deltaTime * 8f); // higher factor for snappier follow
         }
     }
 
 
+
+
     public void OnBlockLanded(Transform landedBlock)
     {
+        //landedBlock.tag = "Block";  // Reset to normal block tag
         topBlock = landedBlock;
+
 
         // When wind should start
         if (!windEnabled && blockCount >= windStartAfter)
