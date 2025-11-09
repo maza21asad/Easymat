@@ -32,7 +32,10 @@ public class GameOverWindow : MonoBehaviour
     public void ShowGameOver()
     {
         if (gameOverPanel != null)
+        {
             gameOverPanel.SetActive(true);
+            Debug.Log("Game Over Panel Active");
+        }
 
         // Pause the game
         Time.timeScale = 0f;
@@ -40,6 +43,7 @@ public class GameOverWindow : MonoBehaviour
 
     private void RestartGame()
     {
+        Debug.Log("Play Again Clicked!");
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
@@ -50,10 +54,19 @@ public class GameOverWindow : MonoBehaviour
         Debug.Log("Quit Game!");
     }
 
+    //public void LoadScene(string sceneName)
+    //{
+    //    SceneManager.LoadScene(sceneName);
+    //}
     public void LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        if (!string.IsNullOrEmpty(sceneName))
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(sceneName);
+        }
     }
+
 
 }
 
