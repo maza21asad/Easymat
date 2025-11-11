@@ -9,6 +9,8 @@ public class Snake : MonoBehaviour
     private enum Direction { Left, Right, Up, Down }
     private enum State { Alive, Dead }
 
+    //[SerializeField] private Vector2Int gridSize = new Vector2Int(10, 20); // Adjust to fit with panel
+
     private State state;
     public float snakeMoveSpeed = 2f;
     private Vector2Int gridPosotion;
@@ -69,38 +71,6 @@ public class Snake : MonoBehaviour
         }
 
     }
-
-    //private void HandleInput()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.UpArrow))
-    //    {
-    //        if (gridMoveDirection != Direction.Down)
-    //        {
-    //            gridMoveDirection = Direction.Up;
-    //        }
-    //    }
-    //    else if (Input.GetKeyDown(KeyCode.DownArrow))
-    //    {
-    //        if (gridMoveDirection != Direction.Up)
-    //        {
-    //            gridMoveDirection = Direction.Down;
-    //        }
-    //    }
-    //    else if (Input.GetKeyDown(KeyCode.LeftArrow))
-    //    {
-    //        if (gridMoveDirection != Direction.Right)
-    //        {
-    //            gridMoveDirection = Direction.Left;
-    //        }
-    //    }
-    //    else if (Input.GetKeyDown(KeyCode.RightArrow))
-    //    {
-    //        if (gridMoveDirection != Direction.Left)
-    //        {
-    //            gridMoveDirection = Direction.Right;
-    //        }
-    //    }
-    //}
 
     private void HandleInput()
     {
@@ -168,6 +138,9 @@ public class Snake : MonoBehaviour
             gridPosotion += gridMoveDirectionVector;
 
             gridPosotion = levelGrid.ValidateGridPosition(gridPosotion);
+            // Keep movement inside the playable grid (panel bounds)
+            //gridPosotion.x = Mathf.Clamp(gridPosotion.x, 0, gridSize.x - 1);
+            //gridPosotion.y = Mathf.Clamp(gridPosotion.y, 0, gridSize.y - 1);
 
             bool snakeAteFood = levelGrid.TrySnakeEatFood(gridPosotion);
             if (snakeAteFood)
