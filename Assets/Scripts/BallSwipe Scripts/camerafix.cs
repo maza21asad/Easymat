@@ -1,10 +1,14 @@
 using UnityEngine;
 
-[ExecuteAlways] // Works both in Play Mode and Edit Mode
-public class CameraAutoScaler : MonoBehaviour
+[ExecuteAlways]
+[RequireComponent(typeof(Camera))]
+public class CameraFix : MonoBehaviour
 {
     [Header("Reference Settings")]
-    [Tooltip("Reference aspect ratio (e.g., 9:16 for portrait or 16:9 for landscape).")]
+    [Tooltip("Reference screen height in world units (this should match your base camera size * 2).")]
+    public float referenceHeight = 10f; // For orthographic size 5 â†’ height = 10 units.
+
+    [Tooltip("Reference resolution you designed your game for (width x height).")]
     public Vector2 referenceResolution = new Vector2(1080f, 1920f);
 
     private Camera cam;
@@ -12,42 +16,33 @@ public class CameraAutoScaler : MonoBehaviour
     void Start()
     {
         cam = GetComponent<Camera>();
-        if (cam == null)
-        {
-            Debug.LogError("CameraAutoScaler: No Camera component found!");
-            return;
-        }
-
         AdjustCamera();
     }
 
 #if UNITY_EDITOR
     void Update()
     {
-        // Continuously update in Editor to preview scaling
+        // Update live in editor for preview
         AdjustCamera();
     }
 #endif
 
     void AdjustCamera()
     {
-        if (cam == null) return;
+        if (cam == null) cam = GetComponent<Camera>();
+        if (!cam.orthographic)
+        {
+            Debug.LogWarning("CameraFix works only with Orthographic projection.");
+            return;
+        }
 
         float targetAspect = referenceResolution.x / referenceResolution.y;
         float windowAspect = (float)Screen.width / Screen.height;
 
-        float scaleFactor = targetAspect / windowAspect;
+        // Calculate how much to adjust
+        float scale = windowAspect / targetAspect;
 
-        // Adjust orthographic size based on aspect difference
-        if (scaleFactor < 1f)
-        {
-            // Wider screen (e.g., tablet) — zoom out
-            cam.orthographicSize = 5f / scaleFactor;
-        }
-        else
-        {
-            // Taller or same — use base size
-            cam.orthographicSize = 5f;
-        }
+        // Adjust orthographic size to maintain consistent height
+        cam.orthographicSize = (referenceHeight / 2f) / Mathf.Max(scale, 1f);
     }
 }
