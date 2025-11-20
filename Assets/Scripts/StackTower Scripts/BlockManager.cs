@@ -12,6 +12,10 @@ public class BlockManager : MonoBehaviour
     public float spawnHeightOffset = 3f;
     public CameraTarget cameraTarget;
 
+
+    [Header("Holder Settings")]
+    public float holderStepUp = 0.5f; // how much the holder goes up after each block drop
+
     [Header("Holder")]
     public Transform holder;  // Holder for moving blocks
 
@@ -86,6 +90,20 @@ public class BlockManager : MonoBehaviour
         }
     }
 
+
+    private IEnumerator MoveHolderUp(float step, float delay)
+    {
+        yield return new WaitForSeconds(delay); // wait before moving
+
+        if (holder != null)
+        {
+            Vector3 holderPos = holder.position;
+            holder.position = new Vector3(holderPos.x, holderPos.y + step, holderPos.z);
+        }
+    }
+
+
+
     private void LateUpdate()
     {
         UpdateHolderMovement();
@@ -127,7 +145,10 @@ public class BlockManager : MonoBehaviour
     {
         topBlock = landedBlock;
 
-        // Enable wind after enough blocks
+        // Move holder up slightly after a small delay
+        StartCoroutine(MoveHolderUp(holderStepUp, 0.3f)); // 0.3s delay before moving up
+
+        // When wind should start
         if (!windEnabled && blockCount >= windStartAfter)
         {
             windEnabled = true;
@@ -137,6 +158,8 @@ public class BlockManager : MonoBehaviour
         if (canSpawn)
             StartCoroutine(SpawnNextBlock());
     }
+
+
 
     private IEnumerator SpawnNextBlock()
     {

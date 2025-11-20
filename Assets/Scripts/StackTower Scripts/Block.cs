@@ -6,10 +6,10 @@ public class Block : MonoBehaviour
     private bool hasDropped = false;
     private bool hasLanded = false;
     private BlockManager manager;
-    private static bool firstBlockGrounded = false; // Track first block base
-    private float windForce = 0f; // Horizontal wind force
+    private static bool firstBlockGrounded = false; 
+    private float windForce = 0f; 
 
-    public GameObject windArrow; // Optional: visual wind indicator
+    public GameObject windArrow; 
 
     // Public read-only property for wind
     public float WindForce { get { return windForce; } }
