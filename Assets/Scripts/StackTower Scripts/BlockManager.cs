@@ -12,20 +12,19 @@ public class BlockManager : MonoBehaviour
     public float spawnHeightOffset = 3f;
     public CameraTarget cameraTarget;
 
-
     [Header("Holder Settings")]
-    public float holderStepUp = 0.5f; // how much the holder goes up after each block drop
+    public float holderStepUp = 0.5f;
 
     [Header("Holder")]
-    public Transform holder;  // Holder for moving blocks
+    public Transform holder;
 
     private int blockCount = 0;
     private bool canSpawn = true;
     private Transform topBlock;
 
     [Header("UI Panels")]
-    public GameObject newPanel;    // Game Over Panel
-    public GameObject gamePanel;   // Game Panel
+    public GameObject newPanel;
+    public GameObject gamePanel;
 
     [Header("Timer Settings")]
     public float gameTime = 60f;
@@ -34,31 +33,25 @@ public class BlockManager : MonoBehaviour
     private bool isTimerRunning = false;
 
     [Header("Wind Settings")]
-    public bool windEnabled = false;   // Wind is OFF at start
-    public int windStartAfter = 10;    // Wind starts after 10 blocks
+    public bool windEnabled = false;
+    public int windStartAfter = 10;
 
     [Header("Wind UI")]
-    public TMP_Text windForceText;     // Drag your TMP_Text here
+    public TMP_Text windForceText;
 
     public CinemachineVirtualCamera virtualCamera;
 
-    public float moveSpeed = 1f;      // Speed of left-right movement
-    public float moveRange = 2f;      // Horizontal movement range
+    public float moveSpeed = 1f;
+    public float moveRange = 2f;
 
-    private Vector3 initialHolderPos; // starting position for left-right movement
+    private Vector3 initialHolderPos;
     private float moveTimer = 0f;
 
     private void Start()
     {
-        if (blockPrefab == null || spawnPoint == null)
-        {
-            Debug.LogError("BlockManager: Missing blockPrefab or spawnPoint reference!");
-            return;
-        }
+        initialHolderPos = holder.position;
 
-        initialHolderPos = holder != null ? holder.position : Vector3.zero;
-
-        SpawnBlock(autoDrop: true); // First block will move like others
+        SpawnBlock(autoDrop: true);
 
         timer = gameTime;
         isTimerRunning = true;
@@ -78,31 +71,20 @@ public class BlockManager : MonoBehaviour
                 isTimerRunning = false;
                 timerText.text = "Time: 0";
 
-                if (gamePanel != null)
-                    gamePanel.SetActive(false);
-
-                if (newPanel != null)
-                    newPanel.SetActive(true);
+                if (gamePanel != null) gamePanel.SetActive(false);
+                if (newPanel != null) newPanel.SetActive(true);
 
                 canSpawn = false;
-                Debug.Log("Time's up! Game over triggered.");
             }
         }
     }
 
-
     private IEnumerator MoveHolderUp(float step, float delay)
     {
-        yield return new WaitForSeconds(delay); // wait before moving
+        yield return new WaitForSeconds(delay);
 
-        if (holder != null)
-        {
-            Vector3 holderPos = holder.position;
-            holder.position = new Vector3(holderPos.x, holderPos.y + step, holderPos.z);
-        }
+        holder.position += new Vector3(0, step, 0);
     }
-
-
 
     private void LateUpdate()
     {
@@ -113,53 +95,32 @@ public class BlockManager : MonoBehaviour
     {
         if (holder == null || topBlock == null) return;
 
-        // Horizontal: continuous sine movement
+        // Left-right motion
         moveTimer += Time.deltaTime * moveSpeed;
         float offsetX = Mathf.Sin(moveTimer) * moveRange;
 
-        // Vertical: smoothly follow tower, only upwards
+        // Smooth vertical follow
         float desiredY = topBlock.position.y + (spawnHeightOffset - 0.5f);
         float targetY = holder.position.y;
+
         if (desiredY > holder.position.y)
-        {
             targetY = Mathf.Lerp(holder.position.y, desiredY, Time.deltaTime * 5f);
-        }
 
-        // Apply new position to holder (visual)
-        Vector3 newPos = new Vector3(
-            initialHolderPos.x + offsetX,
-            targetY,
-            holder.position.z
-        );
-        holder.position = newPos;
-
-        // --- Smooth follow for currently held block ---
-        if (topBlock != null && topBlock.CompareTag("wBlock"))
-        {
-            Vector3 blockTargetPos = new Vector3(newPos.x, newPos.y - 0.7f, newPos.z);
-            topBlock.position = Vector3.Lerp(topBlock.position, blockTargetPos, Time.deltaTime * 8f);
-        }
+        holder.position = new Vector3(initialHolderPos.x + offsetX, targetY, holder.position.z);
     }
 
     public void OnBlockLanded(Transform landedBlock)
     {
         topBlock = landedBlock;
 
-        // Move holder up slightly after a small delay
-        StartCoroutine(MoveHolderUp(holderStepUp, 0.3f)); // 0.3s delay before moving up
+        StartCoroutine(MoveHolderUp(holderStepUp, 0.3f));
 
-        // When wind should start
         if (!windEnabled && blockCount >= windStartAfter)
-        {
             windEnabled = true;
-            Debug.Log($"Wind system activated after {blockCount} blocks!");
-        }
 
         if (canSpawn)
             StartCoroutine(SpawnNextBlock());
     }
-
-
 
     private IEnumerator SpawnNextBlock()
     {
@@ -174,29 +135,13 @@ public class BlockManager : MonoBehaviour
         blockCount++;
         Camofsetadd();
 
-        // Holder logic
-        if (holder != null)
-        {
-            float yOffset = -0.7f;
-            spawnPoint.position = new Vector3(holder.position.x, holder.position.y + yOffset, holder.position.z);
-        }
-        else
-        {
-            float middleX = 0f;
-            float spawnY = spawnHeightOffset;
-            float spawnZ = 0f;
-
-            if (topBlock != null)
-            {
-                spawnY = topBlock.position.y + spawnHeightOffset;
-                spawnZ = topBlock.position.z;
-            }
-
-            spawnPoint.position = new Vector3(middleX, spawnY, spawnZ);
-        }
+        float yOffset = -0.7f;
+        spawnPoint.position = new Vector3(holder.position.x, holder.position.y + yOffset, holder.position.z);
 
         GameObject newBlock = Instantiate(blockPrefab, spawnPoint.position, Quaternion.identity);
-        newBlock.tag = "Block";
+
+        // ?? FIX: Parent to holder so no shaking
+        newBlock.transform.SetParent(holder);
 
         Block blockScript = newBlock.GetComponent<Block>();
         if (blockScript != null)
@@ -205,7 +150,6 @@ public class BlockManager : MonoBehaviour
         if (cameraTarget != null)
             cameraTarget.SetTopBlock(newBlock.transform);
 
-        // Show wind text for this block **before dropping**
         if (windEnabled && blockScript != null)
         {
             float displayForce = blockScript.WindForce;
@@ -227,19 +171,13 @@ public class BlockManager : MonoBehaviour
 
     public void EndGame()
     {
-        Debug.Log("Game Over! A block hit the ground.");
-
-        if (gamePanel != null)
-            gamePanel.SetActive(false);
-
-        if (newPanel != null)
-            newPanel.SetActive(true);
+        if (gamePanel != null) gamePanel.SetActive(false);
+        if (newPanel != null) newPanel.SetActive(true);
 
         canSpawn = false;
         isTimerRunning = false;
     }
 
-    // --- DOTween Wind Force Text ---
     public void ShowWindForceText(float force)
     {
         if (!windEnabled || windForceText == null) return;
