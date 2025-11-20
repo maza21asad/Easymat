@@ -11,6 +11,9 @@ public class Block : MonoBehaviour
 
     public GameObject windArrow; // Optional: visual wind indicator
 
+    // Public read-only property for wind
+    public float WindForce { get { return windForce; } }
+
     public void Initialize(BlockManager blockManager, bool autoDrop = false)
     {
         manager = blockManager;
@@ -22,22 +25,21 @@ public class Block : MonoBehaviour
             return;
         }
 
-        // Apply wind logic
+        // Apply wind logic if enabled
         if (manager.windEnabled)
         {
             windForce = Random.Range(-3f, 3f);
-
             if (windForce > 0)
-                Debug.Log($"??? Wind is blowing RIGHT with force {windForce}");
+                Debug.Log($"Wind blowing RIGHT with force {windForce}");
             else if (windForce < 0)
-                Debug.Log($"??? Wind is blowing LEFT with force {windForce}");
+                Debug.Log($"Wind blowing LEFT with force {windForce}");
             else
-                Debug.Log("??? Calm weather, no wind for this block.");
+                Debug.Log("Calm weather, no wind for this block.");
         }
         else
         {
             windForce = 0f;
-            Debug.Log("?? Wind disabled — calm weather mode.");
+            Debug.Log("Wind disabled — calm weather mode.");
         }
 
         // Before dropping, block stays attached to holder
@@ -69,40 +71,34 @@ public class Block : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = 1f;
 
-        // Apply wind impulse on drop (only if wind active)
+        // Apply wind impulse on drop
         if (manager.windEnabled && Mathf.Abs(windForce) > 0f)
         {
             rb.AddForce(new Vector2(windForce, 0f), ForceMode2D.Impulse);
-
             if (windForce > 0)
-                Debug.Log($"?? Dropped block pushed RIGHT by wind {windForce}");
+                Debug.Log($"Dropped block pushed RIGHT by wind {windForce}");
             else
-                Debug.Log($"?? Dropped block pushed LEFT by wind {windForce}");
-        }
-        else
-        {
-            Debug.Log("?? Dropped block: calm weather (no wind applied).");
+                Debug.Log($"Dropped block pushed LEFT by wind {windForce}");
         }
 
-        // Hide wind arrow if used
         if (windArrow != null)
             windArrow.SetActive(false);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Base block safe grounding
+        // Base block grounding
         if (collision.gameObject.CompareTag("Ground"))
         {
             if (!firstBlockGrounded)
             {
                 firstBlockGrounded = true;
                 rb.bodyType = RigidbodyType2D.Static;
-                Debug.Log("? First block grounded safely — base created.");
+                Debug.Log("First block grounded safely — base created.");
             }
             else
             {
-                Debug.Log("? Block touched ground — game over!");
+                Debug.Log("Block touched ground — game over!");
                 if (manager != null)
                     manager.EndGame();
             }

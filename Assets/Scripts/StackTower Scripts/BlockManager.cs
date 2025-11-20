@@ -2,7 +2,7 @@ using Cinemachine;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.TestTools;
+using DG.Tweening;
 
 public class BlockManager : MonoBehaviour
 {
@@ -33,16 +33,16 @@ public class BlockManager : MonoBehaviour
     public bool windEnabled = false;   // Wind is OFF at start
     public int windStartAfter = 10;    // Wind starts after 10 blocks
 
+    [Header("Wind UI")]
+    public TMP_Text windForceText;     // Drag your TMP_Text here
+
     public CinemachineVirtualCamera virtualCamera;
-
-
 
     public float moveSpeed = 1f;      // Speed of left-right movement
     public float moveRange = 2f;      // Horizontal movement range
 
     private Vector3 initialHolderPos; // starting position for left-right movement
     private float moveTimer = 0f;
-
 
     private void Start()
     {
@@ -52,12 +52,12 @@ public class BlockManager : MonoBehaviour
             return;
         }
 
+        initialHolderPos = holder != null ? holder.position : Vector3.zero;
+
         SpawnBlock(autoDrop: true); // First block will move like others
 
         timer = gameTime;
         isTimerRunning = true;
-
-
     }
 
     private void Update()
@@ -71,52 +71,31 @@ public class BlockManager : MonoBehaviour
 
             if (timer <= 0)
             {
-                /*isTimerRunning = false;
-                timerText.text = "Time: 0";
-                //EndGame();*/
-
                 isTimerRunning = false;
                 timerText.text = "Time: 0";
 
-                // Time over ? show game over panel
                 if (gamePanel != null)
                     gamePanel.SetActive(false);
 
                 if (newPanel != null)
                     newPanel.SetActive(true);
 
-                canSpawn = false; // stop spawning blocks
-                Debug.Log("? Time's up! Game over triggered.");
+                canSpawn = false;
+                Debug.Log("Time's up! Game over triggered.");
             }
         }
     }
-
 
     private void LateUpdate()
     {
         UpdateHolderMovement();
     }
 
-    /*private void UpdateHolderHeight()
-    {
-        if (holder != null && topBlock != null)
-        {
-            // Distance above top block
-            float offsetY = spawnHeightOffset - 0.5f;
-
-            // Smooth movement to avoid sudden jump
-            Vector3 targetPos = new Vector3(holder.position.x, topBlock.position.y + offsetY, holder.position.z);
-            holder.position = Vector3.Lerp(holder.position, targetPos, Time.deltaTime);
-
-            Debug.Log($"Holder Current Y: {holder.position.y:F2}, Target Y: {targetPos.y:F2}, Top Block Y: {topBlock.position.y:F2}");
-        }
-    }*/
-
     private void UpdateHolderMovement()
     {
         if (holder == null || topBlock == null) return;
 
-        // Horizontal: continuous sine
+        // Horizontal: continuous sine movement
         moveTimer += Time.deltaTime * moveSpeed;
         float offsetX = Mathf.Sin(moveTimer) * moveRange;
 
@@ -125,10 +104,10 @@ public class BlockManager : MonoBehaviour
         float targetY = holder.position.y;
         if (desiredY > holder.position.y)
         {
-            targetY = Mathf.Lerp(holder.position.y, desiredY, Time.deltaTime * 5f); // Increase factor for faster smoothness
+            targetY = Mathf.Lerp(holder.position.y, desiredY, Time.deltaTime * 5f);
         }
 
-        // Apply position to holder (visual)
+        // Apply new position to holder (visual)
         Vector3 newPos = new Vector3(
             initialHolderPos.x + offsetX,
             targetY,
@@ -139,21 +118,16 @@ public class BlockManager : MonoBehaviour
         // --- Smooth follow for currently held block ---
         if (topBlock != null && topBlock.CompareTag("wBlock"))
         {
-            Vector3 blockTargetPos = new Vector3(newPos.x, newPos.y - 0.7f, newPos.z); // adjust offset
-            topBlock.position = Vector3.Lerp(topBlock.position, blockTargetPos, Time.deltaTime * 8f); // higher factor for snappier follow
+            Vector3 blockTargetPos = new Vector3(newPos.x, newPos.y - 0.7f, newPos.z);
+            topBlock.position = Vector3.Lerp(topBlock.position, blockTargetPos, Time.deltaTime * 8f);
         }
     }
 
-
-
-
     public void OnBlockLanded(Transform landedBlock)
     {
-        //landedBlock.tag = "Block";  // Reset to normal block tag
         topBlock = landedBlock;
 
-
-        // When wind should start
+        // Enable wind after enough blocks
         if (!windEnabled && blockCount >= windStartAfter)
         {
             windEnabled = true;
@@ -180,7 +154,7 @@ public class BlockManager : MonoBehaviour
         // Holder logic
         if (holder != null)
         {
-            float yOffset = -0.7f; // move 0.5 units down
+            float yOffset = -0.7f;
             spawnPoint.position = new Vector3(holder.position.x, holder.position.y + yOffset, holder.position.z);
         }
         else
@@ -203,15 +177,24 @@ public class BlockManager : MonoBehaviour
 
         Block blockScript = newBlock.GetComponent<Block>();
         if (blockScript != null)
-            blockScript.Initialize(this, autoDrop); // Pass manager reference
+            blockScript.Initialize(this, autoDrop);
 
         if (cameraTarget != null)
             cameraTarget.SetTopBlock(newBlock.transform);
+
+        // Show wind text for this block **before dropping**
+        if (windEnabled && blockScript != null)
+        {
+            float displayForce = blockScript.WindForce;
+            displayForce = displayForce > 0 ? 2.5f : (displayForce < 0 ? -2.5f : 0f);
+            ShowWindForceText(displayForce);
+        }
     }
 
     void Camofsetadd()
     {
-        virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_TrackedObjectOffset.y += 0.4f;
+        if (virtualCamera != null)
+            virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_TrackedObjectOffset.y += 0.4f;
     }
 
     public int GetBlockCount()
@@ -231,5 +214,26 @@ public class BlockManager : MonoBehaviour
 
         canSpawn = false;
         isTimerRunning = false;
+    }
+
+    // --- DOTween Wind Force Text ---
+    public void ShowWindForceText(float force)
+    {
+        if (!windEnabled || windForceText == null) return;
+
+        windForceText.text = force.ToString("F1") + " Force";
+
+        windForceText.gameObject.SetActive(true);
+        windForceText.alpha = 0f;
+        windForceText.transform.localScale = Vector3.zero;
+
+        Sequence s = DOTween.Sequence();
+        s.AppendInterval(0.7f)
+         .Append(windForceText.DOFade(1f, 0.25f))
+         .Join(windForceText.transform.DOScale(1f, 0.25f).SetEase(Ease.OutBack))
+         .AppendInterval(0.6f)
+         .Append(windForceText.DOFade(0f, 0.5f))
+         .Join(windForceText.transform.DOScale(0.8f, 0.5f))
+         .OnComplete(() => windForceText.gameObject.SetActive(false));
     }
 }
