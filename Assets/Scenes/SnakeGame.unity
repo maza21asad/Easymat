@@ -899,7 +899,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -141, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &622737178
@@ -1286,7 +1286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db6721a1a8839234697f708c798129aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameOverUI: {fileID: 0}
+  gameOverUI: {fileID: 1261139940}
   hud: {fileID: 0}
 --- !u!4 &782108881
 Transform:
@@ -1681,13 +1681,14 @@ GameObject:
   - component: {fileID: 1261139938}
   - component: {fileID: 1261139937}
   - component: {fileID: 1261139936}
+  - component: {fileID: 1261139940}
   m_Layer: 5
   m_Name: GameOverPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1261139936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1695,7 +1696,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1261139935}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70379eeb0105fc944a7df0003ad41445, type: 3}
   m_Name: 
@@ -1766,6 +1767,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 862.1, y: 1359.77}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1261139940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1261139935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb1a2f7e2ffea8347902699de4a6a4d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panel: {fileID: 1261139935}
 --- !u!1 &1296209822
 GameObject:
   m_ObjectHideFlags: 0
@@ -1797,12 +1811,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grid: {fileID: 1405351352}
   input: {fileID: 622737179}
-  snakeHeadUI: {fileID: 2092540277}
+  headRect: {fileID: 0}
   bodyContainer: {fileID: 582950301}
   bodyPrefab: {fileID: 6227229420716328613, guid: c5399b51b7c779d45bf9e9f7ef7ee548,
     type: 3}
-  foodUI: {fileID: 1367668196}
-  moveInterval: 0.15
+  tailRectPrefab: {fileID: 0}
+  foodRect: {fileID: 0}
+  bodyStraightSprite: {fileID: 0}
+  bodyCornerSprite: {fileID: 0}
+  tailSprite: {fileID: 0}
+  snakeMoveSpeed: 2
+  gridMoveTimerMax: 0.2
+  gameOverUI: {fileID: 0}
 --- !u!4 &1296209824
 Transform:
   m_ObjectHideFlags: 0
@@ -3035,7 +3055,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1989646227}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88733ece7cf66ed49b780031ab676aec, type: 3}
   m_Name: 
