@@ -12,6 +12,12 @@ public class BlockManager : MonoBehaviour
     public float spawnHeightOffset = 3f;
     public CameraTarget cameraTarget;
 
+
+    [Header("Score Settings")]
+    public int score = 0;
+    public TMP_Text scoreText;
+
+
     [Header("Holder Settings")]
     public float holderStepUp = 0.5f;
 
@@ -39,6 +45,10 @@ public class BlockManager : MonoBehaviour
     [Header("Wind UI")]
     public TMP_Text windForceText;
 
+    [Header("Settings Panel")]
+    public GameObject settingsPanel;
+
+
     public CinemachineVirtualCamera virtualCamera;
 
     public float moveSpeed = 1f;
@@ -56,6 +66,15 @@ public class BlockManager : MonoBehaviour
         timer = gameTime;
         isTimerRunning = true;
     }
+
+    public void AddScore(int amount)
+    {
+        score += amount;
+
+        if (scoreText != null)
+            scoreText.text = ""+ score;
+    }
+
 
     private void Update()
     {
@@ -111,6 +130,8 @@ public class BlockManager : MonoBehaviour
 
     public void OnBlockLanded(Transform landedBlock)
     {
+        AddScore(10);
+
         topBlock = landedBlock;
 
         StartCoroutine(MoveHolderUp(holderStepUp, 0.3f));
@@ -176,6 +197,16 @@ public class BlockManager : MonoBehaviour
 
         canSpawn = false;
         isTimerRunning = false;
+
+        if (holder != null)
+            holder.gameObject.SetActive(false);
+
+        // ?? Destroy all spawned blocks in the scene
+        Block[] allBlocks = FindObjectsOfType<Block>();
+        foreach (var block in allBlocks)
+        {
+            Destroy(block.gameObject);
+        }
     }
 
     public void ShowWindForceText(float force)
@@ -197,4 +228,46 @@ public class BlockManager : MonoBehaviour
          .Join(windForceText.transform.DOScale(0.8f, 0.5f))
          .OnComplete(() => windForceText.gameObject.SetActive(false));
     }
+
+
+    public void OpenSettings()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(true);
+
+        // Stop game
+        canSpawn = false;
+        isTimerRunning = false;
+
+        // Hide the whole holder (blocks will also be hidden automatically)
+        if (holder != null)
+            holder.gameObject.SetActive(false);
+
+        // Hide gameplay panel
+        if (gamePanel != null)
+            gamePanel.SetActive(false);
+    }
+
+
+
+    public void CloseSettings()
+    {
+        if (settingsPanel != null)
+            settingsPanel.SetActive(false);
+
+        // Resume gameplay UI
+        if (gamePanel != null)
+            gamePanel.SetActive(true);
+
+        // Show holder again (and all blocks)
+        if (holder != null)
+            holder.gameObject.SetActive(true);
+
+        // Resume logic
+        isTimerRunning = true;
+        canSpawn = true;
+    }
+
+
+
 }
