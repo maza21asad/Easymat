@@ -41,7 +41,7 @@ public class GameOverWindow : MonoBehaviour
         Time.timeScale = 0f;
     }
 
-    private void RestartGame()
+    public void RestartGame()
     {
         Debug.Log("Play Again Clicked!");
         Time.timeScale = 1f;
