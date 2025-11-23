@@ -24,28 +24,28 @@ public class BallSpawner : MonoBehaviour
     public BallController SpawnBall()
     {
         if (ballPrefab == null || spawnPoint == null)
-        {
-            Debug.LogError("Spawner: missing prefab or spawnPoint");
             return null;
-        }
 
         GameObject go = Instantiate(ballPrefab, spawnPoint.position, Quaternion.identity);
 
-        // 🔹 Resize the ball to half its original size
+        // Resize
         go.transform.localScale *= ballScale;
 
         BallController bc = go.GetComponent<BallController>();
         if (bc == null) bc = go.AddComponent<BallController>();
 
+        // Initialize with random color (takes care of mid balls after 40)
         bc.InitRandom();
-        if (gameManager != null) gameManager.currentBall = bc;
+
+        if (gameManager != null)
+            gameManager.currentBall = bc;
 
         lastSpawnTime = Time.time;
 
-        // Adjust spawn rate with score
-        float difficultyFactor = Mathf.Clamp01(gameManager.score / 100f);
-        spawnDelay = Mathf.Lerp(1f, minSpawnDelay, difficultyFactor);
+        // Optional: keep spawn delay slower
+        spawnDelay = 1f;
 
         return bc;
     }
+
 }

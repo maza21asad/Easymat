@@ -38,10 +38,20 @@ public class BallController : MonoBehaviour
 
     private void UpdateSpeed()
     {
-        float maxFallSpeed = 12f;
-        float difficultyFactor = Mathf.Clamp01(GameManager.Instance.score / 100f);
-        fallSpeed = Mathf.Lerp(baseFallSpeed, maxFallSpeed, difficultyFactor);
+        if (GameManager.Instance.score < 80)
+        {
+            fallSpeed = 3f; // slow
+        }
+        else if (GameManager.Instance.score < 120)
+        {
+            fallSpeed = 6f; // medium
+        }
+        else
+        {
+            fallSpeed = 10f; // hard
+        }
     }
+
 
     private void Update()
     {

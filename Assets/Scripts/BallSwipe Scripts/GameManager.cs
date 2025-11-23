@@ -98,6 +98,7 @@ public class GameManager : MonoBehaviour
             if (middleRight) middleRight.gameObject.SetActive(false);
             if (middleLeft) middleLeft.gameObject.SetActive(false);
         }
+
     }
 
     public void OnBallArrived(BallController ball, Corner corner)
