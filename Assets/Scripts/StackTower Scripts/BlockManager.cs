@@ -3,6 +3,8 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
+
 
 public class BlockManager : MonoBehaviour
 {
@@ -47,6 +49,10 @@ public class BlockManager : MonoBehaviour
 
     [Header("Settings Panel")]
     public GameObject settingsPanel;
+
+
+    [Header("Wind Particles")]
+    public ParticleSystem windParticles;
 
 
     public CinemachineVirtualCamera virtualCamera;
@@ -96,6 +102,13 @@ public class BlockManager : MonoBehaviour
                 canSpawn = false;
             }
         }
+    }
+
+
+    public void RestartGame()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
     }
 
     private IEnumerator MoveHolderUp(float step, float delay)
@@ -173,11 +186,33 @@ public class BlockManager : MonoBehaviour
 
         if (windEnabled && blockScript != null)
         {
+            RotateWindParticles(blockScript.WindForce);
+
             float displayForce = blockScript.WindForce;
             displayForce = displayForce > 0 ? 2.5f : (displayForce < 0 ? -2.5f : 0f);
             ShowWindForceText(displayForce);
         }
     }
+    private void RotateWindParticles(float force)
+    {
+        if (windParticles == null) return;
+
+        // Left ? Right (positive force)
+        if (force > 0)
+            windParticles.transform.rotation = Quaternion.Euler(0, 0, 0);
+
+        // Right ? Left (negative force)
+        else if (force < 0)
+            windParticles.transform.rotation = Quaternion.Euler(0, 0, 180);
+
+        // No wind
+        else
+            windParticles.Stop();
+
+        if (!windParticles.isPlaying && force != 0)
+            windParticles.Play();
+    }
+
 
     void Camofsetadd()
     {
@@ -213,7 +248,7 @@ public class BlockManager : MonoBehaviour
     {
         if (!windEnabled || windForceText == null) return;
 
-        windForceText.text = force.ToString("F1") + " Force";
+        windForceText.text = force.ToString("") + " Force";
 
         windForceText.gameObject.SetActive(true);
         windForceText.alpha = 0f;
