@@ -17,13 +17,13 @@ public class GameManager : MonoBehaviour
     public float minSwipeDistance = 0.2f;
     public int maxMisses = 3;
 
-    [Header("Ball Sprites (Assign 6 images)")]
+    [Header("Ball Sprites (Assign correct images)")]
     public Sprite redBall;
     public Sprite greenBall;
     public Sprite blueBall;
-    public Sprite yellowBall;
-    public Sprite orangeBall;
-    public Sprite cyanBall;
+    public Sprite yellowBall;     // Bottom Right
+    public Sprite purpleBall;     // Middle Right
+    public Sprite cyanBall;       // Middle Left
 
     [Header("UI")]
     public Text scoreText;
@@ -46,7 +46,6 @@ public class GameManager : MonoBehaviour
 
         if (gameOverPanel) gameOverPanel.SetActive(false);
 
-        // Button listeners
         if (restartButton) restartButton.onClick.AddListener(RestartGame);
         if (exitButton) exitButton.onClick.AddListener(ExitGame);
 
@@ -88,7 +87,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Show/hide orange & cyan after 40 points
+        // Enable purple/cyan after score 40
         if (score >= 40)
         {
             if (middleRight) middleRight.gameObject.SetActive(true);
@@ -110,9 +109,9 @@ public class GameManager : MonoBehaviour
             case Corner.TopRight: expected = BallColor.Red; break;
             case Corner.TopLeft: expected = BallColor.Blue; break;
             case Corner.BottomLeft: expected = BallColor.Green; break;
-            case Corner.BottomRight: expected = BallColor.Purple; break;
-            case Corner.MiddleRight: expected = BallColor.Orange; break;
-            case Corner.MiddleLeft: expected = BallColor.Cyan; break;
+            case Corner.BottomRight: expected = BallColor.Yellow; break;   // ✅ fixed
+            case Corner.MiddleRight: expected = BallColor.Purple; break;   // ✅ purple
+            case Corner.MiddleLeft: expected = BallColor.Cyan; break;      // ✅ cyan
         }
 
         if (ball.ballColor == expected)
@@ -164,7 +163,7 @@ public class GameManager : MonoBehaviour
     private void UpdateUI()
     {
         if (scoreText) scoreText.text = $"{score}";
-        if (livesText) livesText.text = $" {maxMisses - missCount}";
+        if (livesText) livesText.text = $"{maxMisses - missCount}";
     }
 
     private void RestartGame()
@@ -198,24 +197,24 @@ public class GameManager : MonoBehaviour
 
     private Corner GetCornerFromDirection(Vector2 dir)
     {
-        if (score < 40)
+        // SPECIAL CASE: HORIZONTAL SWIPES → MIDDLE CORNERS
+        if (score >= 40)
         {
-            if (dir.x >= 0f && dir.y >= 0f) return Corner.TopRight;
-            if (dir.x < 0f && dir.y >= 0f) return Corner.TopLeft;
-            if (dir.x < 0f && dir.y < 0f) return Corner.BottomLeft;
-            return Corner.BottomRight;
-        }
-        else
-        {
-            if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y))
-                return dir.x > 0f ? Corner.MiddleRight : Corner.MiddleLeft;
+            float angle = Mathf.Abs(dir.y / dir.x);
 
-            if (dir.x >= 0f && dir.y >= 0f) return Corner.TopRight;
-            if (dir.x < 0f && dir.y >= 0f) return Corner.TopLeft;
-            if (dir.x < 0f && dir.y < 0f) return Corner.BottomLeft;
-            return Corner.BottomRight;
+            if (angle < 0.75f) // more horizontal than vertical
+            {
+                return dir.x > 0 ? Corner.MiddleRight : Corner.MiddleLeft;
+            }
         }
+
+        // DEFAULT 4 CORNERS
+        if (dir.x >= 0f && dir.y >= 0f) return Corner.TopRight;
+        if (dir.x < 0f && dir.y >= 0f) return Corner.TopLeft;
+        if (dir.x < 0f && dir.y < 0f) return Corner.BottomLeft;
+        return Corner.BottomRight;
     }
+
 
     private Transform GetCornerTransform(Corner c)
     {
@@ -227,8 +226,8 @@ public class GameManager : MonoBehaviour
             case Corner.BottomRight: return bottomRight;
             case Corner.MiddleRight: return middleRight;
             case Corner.MiddleLeft: return middleLeft;
-            default: return null;
         }
+        return null;
     }
 
     public Sprite GetSprite(BallColor c)
@@ -238,9 +237,9 @@ public class GameManager : MonoBehaviour
             case BallColor.Red: return redBall;
             case BallColor.Green: return greenBall;
             case BallColor.Blue: return blueBall;
-            case BallColor.Purple: return yellowBall;
-            case BallColor.Orange: return orangeBall;
-            case BallColor.Cyan: return cyanBall;
+            case BallColor.Yellow: return yellowBall;   // Bottom Right
+            case BallColor.Purple: return purpleBall;   // Middle Right
+            case BallColor.Cyan: return cyanBall;       // Middle Left
             default: return redBall;
         }
     }

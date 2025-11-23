@@ -21,14 +21,13 @@ public class BallController : MonoBehaviour
 
     public void InitRandom()
     {
-
-        //SOMETHING 
         int colorCount = GameManager.Instance.score >= 40 ? 6 : 4;
         int r = Random.Range(0, colorCount);
         ballColor = (BallColor)r;
         sr.sprite = GameManager.Instance.GetSprite(ballColor);
         UpdateSpeed();
     }
+
 
     public void Init(BallColor color)
     {
