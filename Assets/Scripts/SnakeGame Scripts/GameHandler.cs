@@ -24,14 +24,22 @@ public class GameHandler : MonoBehaviour
         LevelGrid.Setup(snake);
     }
 
+    // ==================================================== added new ============================================================
+    private void Update()
+    {
+        if (LevelGrid != null)
+            LevelGrid.Update();
+    }
+
+
     public static int GetScore()
     {
         return score;
     }
 
-    public static void AddScore()
+    public static void AddScore(int amount)
     {
-        score += 1;
+        score += amount;
     }
 
     public static void SnakeDied()

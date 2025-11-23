@@ -12,6 +12,7 @@ public class GameAssets : MonoBehaviour
 
     [Header("Apple Sprites")]
     public Sprite redAppleSprite;
+    public Sprite goldenAppleSprite;
 
     private void Awake()
     {
