@@ -259,7 +259,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &61243241
 RectTransform:
   m_ObjectHideFlags: 0
@@ -329,8 +329,9 @@ GameObject:
   - component: {fileID: 103368598}
   - component: {fileID: 103368600}
   - component: {fileID: 103368599}
+  - component: {fileID: 103368601}
   m_Layer: 5
-  m_Name: XP
+  m_Name: ScoreWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -394,6 +395,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 103368597}
   m_CullTransparentMesh: 1
+--- !u!114 &103368601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 103368597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 901451641f8e36a4aafd366c2192054f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &214261054
 GameObject:
   m_ObjectHideFlags: 0
@@ -2849,7 +2862,7 @@ GameObject:
   - component: {fileID: 2108130186}
   - component: {fileID: 2108130185}
   m_Layer: 5
-  m_Name: Score
+  m_Name: scoreText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2896,7 +2909,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 48
+    m_FontSize: 70
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 0
