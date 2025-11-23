@@ -7,8 +7,6 @@ public class LevelGrid
     // Normal apple (Red apple)
     private Vector2Int redApplePosition;
     private GameObject redAppleObject;
-    //private Vector2Int foodGridPosition;
-    //private GameObject foodGameObject;
 
     private int redAppleEatCount = 0;
 
@@ -49,24 +47,9 @@ public class LevelGrid
     {
         this.snake = snake;
 
-        //SpawnFood();
         SpawnRedApple();
-        //SpawnGoldenAppleRandomly();
     }
 
-    //private void SpawnFood()
-    //{
-    //    do
-    //    {
-    //        foodGridPosition = new Vector2Int(Random.Range(0, width), Random.Range(0, height));
-    //    }
-    //    //while (snake.GetGridPosition() == foodGridPosition);
-    //    while (snake.GetFullSnakeGridPositionList().IndexOf(foodGridPosition) != -1);
-
-    //    foodGameObject = new GameObject("Food", typeof(SpriteRenderer));
-    //    foodGameObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.redAppleSprite;
-    //    foodGameObject.transform.position = new Vector3(foodGridPosition.x, foodGridPosition.y);
-    //}
     private void SpawnRedApple()
     {
         do
@@ -81,7 +64,6 @@ public class LevelGrid
         redAppleObject.transform.position = new Vector3(redApplePosition.x, redApplePosition.y, 0);
     }
 
-    // ==================================================== added new ============================================================
     private void SpawnGoldenApple()
     {
         do
@@ -98,43 +80,7 @@ public class LevelGrid
         goldenAppleActive = true;
         goldenAppleTimer = goldenAppleDuration;
     }
-    //private void SpawnGoldenAppleRandomly()
-    //{
-    //    // Decide if golden apple should spawn (e.g., 25% chance)
-    //    if (Random.value > 0.75f)
-    //        return;
-
-    //    do
-    //    {
-    //        goldenApplePosition = new Vector2Int(Random.Range(0, width), Random.Range(0, height));
-    //    }
-    //    while (snake.GetFullSnakeGridPositionList().Contains(goldenApplePosition));
-
-    //    goldenAppleObject = new GameObject("GoldenApple", typeof(SpriteRenderer));
-    //    goldenAppleObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.goldenAppleSprite;
-
-    //    goldenAppleObject.transform.position = new Vector3(goldenApplePosition.x, goldenApplePosition.y, 0);
-
-    //    goldenAppleActive = true;
-    //    goldenAppleTimer = goldenAppleDuration;
-    //}
-
-
-    //public bool TrySnakeEatFood(Vector2Int snakeGridPosition)
-    //{
-    //    if (snakeGridPosition == foodGridPosition)
-    //    {
-    //        Object.Destroy(foodGameObject);
-    //        SpawnFood();
-    //        GameHandler.AddScore();
-    //        Debug.Log("Snake ate food");
-    //        return true;
-    //    }
-    //    else
-    //    {
-    //        return false;
-    //    }
-    //}
+    
     public bool TrySnakeEatFood(Vector2Int snakeGridPosition)
     {
         // RED APPLE (Grow + 10 points)
@@ -168,29 +114,6 @@ public class LevelGrid
 
         return false;
     }
-    //public bool TrySnakeEatFood(Vector2Int snakeGridPosition)
-    //{
-    //    // Normal Red Apple
-    //    if (snakeGridPosition == redApplePosition)
-    //    {
-    //        Object.Destroy(redAppleObject);
-    //        SpawnRedApple();
-    //        GameHandler.AddScore(10);  // Red apple = 10 points
-    //        return true;
-    //    }
-
-    //    // Golden Apple
-    //    if (goldenAppleActive && snakeGridPosition == goldenApplePosition)
-    //    {
-    //        Object.Destroy(goldenAppleObject);
-    //        goldenAppleActive = false;
-    //        GameHandler.AddScore(50);  // Golden apple = 50 points
-    //        return true;
-    //    }
-
-    //    return false;
-    //}
-
 
     public Vector2Int ValidateGridPosition(Vector2Int gridPosition)
     {

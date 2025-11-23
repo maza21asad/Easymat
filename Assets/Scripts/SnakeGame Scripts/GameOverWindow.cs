@@ -54,10 +54,6 @@ public class GameOverWindow : MonoBehaviour
         Debug.Log("Quit Game!");
     }
 
-    //public void LoadScene(string sceneName)
-    //{
-    //    SceneManager.LoadScene(sceneName);
-    //}
     public void LoadScene(string sceneName)
     {
         if (!string.IsNullOrEmpty(sceneName))
