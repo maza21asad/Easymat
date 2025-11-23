@@ -21,13 +21,11 @@ public class BallController : MonoBehaviour
 
     public void InitRandom()
     {
-        int colorCount = GameManager.Instance.score >= 40 ? 6 : 4;
-        int r = Random.Range(0, colorCount);
+        int r = Random.Range(0, 4); // Only 4 colors now
         ballColor = (BallColor)r;
         sr.sprite = GameManager.Instance.GetSprite(ballColor);
         UpdateSpeed();
     }
-
 
     public void Init(BallColor color)
     {
@@ -38,20 +36,13 @@ public class BallController : MonoBehaviour
 
     private void UpdateSpeed()
     {
-        if (GameManager.Instance.score < 80)
-        {
+        if (GameManager.Instance.score < 20)
             fallSpeed = 3f; // slow
-        }
-        else if (GameManager.Instance.score < 120)
-        {
+        else if (GameManager.Instance.score < 40)
             fallSpeed = 6f; // medium
-        }
         else
-        {
             fallSpeed = 10f; // hard
-        }
     }
-
 
     private void Update()
     {
@@ -79,9 +70,11 @@ public class BallController : MonoBehaviour
 
     public void MoveToCorner(Transform cornerTransform, Corner corner, float speed = 10f)
     {
+        if (cornerTransform == null) return; // Safety check
         targetPosition = cornerTransform.position;
         targetCorner = corner;
         moveToCornerSpeed = speed;
         isMovingToCorner = true;
     }
 }
+

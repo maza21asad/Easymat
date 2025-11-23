@@ -802,8 +802,6 @@ MonoBehaviour:
   topLeft: {fileID: 1124584272}
   bottomLeft: {fileID: 480075359}
   bottomRight: {fileID: 160932241}
-  middleRight: {fileID: 1586500229}
-  middleLeft: {fileID: 1190284118}
   centerPoint: {fileID: 246817489}
   centerRadius: 2
   minSwipeDistance: 0.2
@@ -812,8 +810,6 @@ MonoBehaviour:
   greenBall: {fileID: 21300000, guid: d598189949f892b4aa32c85c21536db7, type: 3}
   blueBall: {fileID: 21300000, guid: 5c3bb2fcc3517a54199322020fbaed0a, type: 3}
   yellowBall: {fileID: 21300000, guid: f100cddf300f0b64ba524fa1c6721333, type: 3}
-  purpleBall: {fileID: 0}
-  cyanBall: {fileID: 21300000, guid: eda69d36736854d4793e5c212e717416, type: 3}
   scoreText: {fileID: 1166998162}
   livesText: {fileID: 1448642074}
   gameOverPanel: {fileID: 863320371}
@@ -1583,7 +1579,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &717664636
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2335,7 +2331,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1190284118
 Transform:
   m_ObjectHideFlags: 0
@@ -2552,7 +2548,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1343573952
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2968,7 +2964,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1586500229
 Transform:
   m_ObjectHideFlags: 0

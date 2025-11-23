@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,7 +8,6 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     public BallSpawner spawner;
     public Transform topRight, topLeft, bottomLeft, bottomRight;
-    public Transform middleRight, middleLeft;
     public Transform centerPoint;
 
     [Header("Gameplay Settings")]
@@ -17,13 +15,11 @@ public class GameManager : MonoBehaviour
     public float minSwipeDistance = 0.2f;
     public int maxMisses = 3;
 
-    [Header("Ball Sprites (Assign correct images)")]
+    [Header("Ball Sprites (Assign 4 images)")]
     public Sprite redBall;
     public Sprite greenBall;
     public Sprite blueBall;
-    public Sprite yellowBall;     // Bottom Right
-    public Sprite purpleBall;     // Middle Right
-    public Sprite cyanBall;       // Middle Left
+    public Sprite yellowBall;
 
     [Header("UI")]
     public Text scoreText;
@@ -86,19 +82,6 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-
-        // Enable purple/cyan after score 40
-        if (score >= 40)
-        {
-            if (middleRight) middleRight.gameObject.SetActive(true);
-            if (middleLeft) middleLeft.gameObject.SetActive(true);
-        }
-        else
-        {
-            if (middleRight) middleRight.gameObject.SetActive(false);
-            if (middleLeft) middleLeft.gameObject.SetActive(false);
-        }
-
     }
 
     public void OnBallArrived(BallController ball, Corner corner)
@@ -110,9 +93,7 @@ public class GameManager : MonoBehaviour
             case Corner.TopRight: expected = BallColor.Red; break;
             case Corner.TopLeft: expected = BallColor.Blue; break;
             case Corner.BottomLeft: expected = BallColor.Green; break;
-            case Corner.BottomRight: expected = BallColor.Yellow; break;   // ✅ fixed
-            case Corner.MiddleRight: expected = BallColor.Purple; break;   // ✅ purple
-            case Corner.MiddleLeft: expected = BallColor.Cyan; break;      // ✅ cyan
+            case Corner.BottomRight: expected = BallColor.Yellow; break;
         }
 
         if (ball.ballColor == expected)
@@ -198,24 +179,12 @@ public class GameManager : MonoBehaviour
 
     private Corner GetCornerFromDirection(Vector2 dir)
     {
-        // SPECIAL CASE: HORIZONTAL SWIPES → MIDDLE CORNERS
-        if (score >= 40)
-        {
-            float angle = Mathf.Abs(dir.y / dir.x);
-
-            if (angle < 0.75f) // more horizontal than vertical
-            {
-                return dir.x > 0 ? Corner.MiddleRight : Corner.MiddleLeft;
-            }
-        }
-
-        // DEFAULT 4 CORNERS
+        // Only 4 corners now
         if (dir.x >= 0f && dir.y >= 0f) return Corner.TopRight;
         if (dir.x < 0f && dir.y >= 0f) return Corner.TopLeft;
         if (dir.x < 0f && dir.y < 0f) return Corner.BottomLeft;
         return Corner.BottomRight;
     }
-
 
     private Transform GetCornerTransform(Corner c)
     {
@@ -225,8 +194,6 @@ public class GameManager : MonoBehaviour
             case Corner.TopLeft: return topLeft;
             case Corner.BottomLeft: return bottomLeft;
             case Corner.BottomRight: return bottomRight;
-            case Corner.MiddleRight: return middleRight;
-            case Corner.MiddleLeft: return middleLeft;
         }
         return null;
     }
@@ -238,9 +205,7 @@ public class GameManager : MonoBehaviour
             case BallColor.Red: return redBall;
             case BallColor.Green: return greenBall;
             case BallColor.Blue: return blueBall;
-            case BallColor.Yellow: return yellowBall;   // Bottom Right
-            case BallColor.Purple: return purpleBall;   // Middle Right
-            case BallColor.Cyan: return cyanBall;       // Middle Left
+            case BallColor.Yellow: return yellowBall;
             default: return redBall;
         }
     }
