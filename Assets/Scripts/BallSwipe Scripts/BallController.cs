@@ -36,9 +36,9 @@ public class BallController : MonoBehaviour
 
     private void UpdateSpeed()
     {
-        if (GameManager.Instance.score < 20)
+        if (GameManager.Instance.score < 40)
             fallSpeed = 3f; // slow
-        else if (GameManager.Instance.score < 40)
+        else if (GameManager.Instance.score < 100)
             fallSpeed = 6f; // medium
         else
             fallSpeed = 10f; // hard
