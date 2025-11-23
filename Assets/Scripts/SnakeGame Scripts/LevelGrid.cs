@@ -17,11 +17,15 @@ public class LevelGrid
     private float goldenAppleDuration = 5f; // 5 seconds
     private bool goldenAppleActive = false;
 
+    // Diamond apple
+    private Vector2Int diamondApplePosition;
+    private GameObject diamondAppleObject;
+    private bool diamondAppleActive = false;
+
     private int width;
     private int height;
     private Snake snake;
 
-    // ==================================================== added new ============================================================
     public void Update()
     {
         if (goldenAppleActive)
@@ -80,10 +84,26 @@ public class LevelGrid
         goldenAppleActive = true;
         goldenAppleTimer = goldenAppleDuration;
     }
-    
+
+    private void SpawnDiamondApple()
+    {
+        do
+        {
+            diamondApplePosition = new Vector2Int(Random.Range(0, width), Random.Range(0, height));
+        }
+        while (snake.GetFullSnakeGridPositionList().Contains(diamondApplePosition));
+
+        diamondAppleObject = new GameObject("DiamondApple", typeof(SpriteRenderer));
+        diamondAppleObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.diamondAppleSprite;
+
+        diamondAppleObject.transform.position = new Vector3(diamondApplePosition.x, diamondApplePosition.y, 0);
+
+        diamondAppleActive = true;
+    }
+
     public bool TrySnakeEatFood(Vector2Int snakeGridPosition)
     {
-        // RED APPLE (Grow + 10 points)
+        // RED APPLE = Grow + 10 points
         if (snakeGridPosition == redApplePosition)
         {
             Object.Destroy(redAppleObject);
@@ -92,16 +112,26 @@ public class LevelGrid
 
             redAppleEatCount++;
 
-            // Every 5 red apples → spawn golden apple
+            // Every 5 red apples → Golden apple appears
             if (redAppleEatCount % 5 == 0 && !goldenAppleActive)
             {
                 SpawnGoldenApple();
             }
 
-            return true; // This tells Snake.cs to grow
+            // Every 30 red apples → Diamond apple 10% chance
+            if (redAppleEatCount % 30 == 0 && !diamondAppleActive)
+            {
+                float chance = Random.value; // 0.0 to 1.0
+                if (chance <= 0.10f) // 10% chance
+                {
+                    SpawnDiamondApple();
+                }
+            }
+
+            return true; // grow
         }
 
-        // GOLDEN APPLE (No growth + 50 points)
+        // GOLDEN APPLE = 50 points, NO grow
         if (goldenAppleActive && snakeGridPosition == goldenApplePosition)
         {
             Object.Destroy(goldenAppleObject);
@@ -109,11 +139,23 @@ public class LevelGrid
 
             GameHandler.AddScore(50);
 
-            return false; // IMPORTANT: tells Snake.cs NOT to grow
+            return false; // no grow
+        }
+
+        // DIAMOND APPLE = 500 points, NO grow
+        if (diamondAppleActive && snakeGridPosition == diamondApplePosition)
+        {
+            Object.Destroy(diamondAppleObject);
+            diamondAppleActive = false;
+
+            GameHandler.AddScore(500);
+
+            return false; // no grow
         }
 
         return false;
     }
+
 
     public Vector2Int ValidateGridPosition(Vector2Int gridPosition)
     {
