@@ -62,6 +62,9 @@ public class BlockManager : MonoBehaviour
 
     private Vector3 initialHolderPos;
     private float moveTimer = 0f;
+    [Header("Final Score UI")]
+    public TMP_Text finalScoreText;
+
 
 
 
@@ -251,6 +254,10 @@ public class BlockManager : MonoBehaviour
         if (gamePanel != null) gamePanel.SetActive(false);
         if (newPanel != null) newPanel.SetActive(true);
 
+        // Show final score
+        if (finalScoreText != null)
+            finalScoreText.text = "" + score;
+
         canSpawn = false;
         isTimerRunning = false;
 
@@ -264,6 +271,8 @@ public class BlockManager : MonoBehaviour
             Destroy(block.gameObject);
         }
     }
+
+
 
     /*public void ShowWindForceText(float force)
     {
