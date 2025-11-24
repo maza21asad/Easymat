@@ -267,20 +267,22 @@ public class BlockManager : MonoBehaviour
 
     public void OpenSettings()
     {
-        if (settingsPanel != null)
-            settingsPanel.SetActive(true);
-
-        // Stop game
         canSpawn = false;
+        StopAllCoroutines();
         isTimerRunning = false;
 
-        // Hide the whole holder (blocks will also be hidden automatically)
+        Block[] allBlocks = FindObjectsOfType<Block>();
+        foreach (var block in allBlocks)
+            block.gameObject.SetActive(false);
+
         if (holder != null)
             holder.gameObject.SetActive(false);
 
-        // Hide gameplay panel
         if (gamePanel != null)
             gamePanel.SetActive(false);
+
+        if (settingsPanel != null)
+            settingsPanel.SetActive(true);
     }
 
 
