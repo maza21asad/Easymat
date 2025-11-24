@@ -118,11 +118,11 @@ public class LevelGrid
                 SpawnGoldenApple();
             }
 
-            // Every 30 red apples → Diamond apple 10% chance
-            if (redAppleEatCount % 30 == 0 && !diamondAppleActive)
+            // Every 10 red apples → Diamond apple 50% chance
+            if (redAppleEatCount % 10 == 0 && !diamondAppleActive)
             {
                 float chance = Random.value; // 0.0 to 1.0
-                if (chance <= 0.10f) // 10% chance
+                if (chance <= 0.50f) // 50% chance
                 {
                     SpawnDiamondApple();
                 }
