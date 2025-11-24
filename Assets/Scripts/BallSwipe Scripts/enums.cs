@@ -1,9 +1,11 @@
 public enum BallColor
 {
-    Red,      // Top Right
-    Blue,     // Top Left
-    Green,    // Bottom Left
-    Yellow    // Bottom Right
+    Red,
+    Blue,
+    Green,
+    Yellow,
+    Purple,    // NEW (Mid Left)
+    Cyan       // NEW (Mid Right)
 }
 
 public enum Corner
@@ -11,5 +13,8 @@ public enum Corner
     TopRight,
     TopLeft,
     BottomLeft,
-    BottomRight
+    BottomRight,
+    MidLeft,   // NEW
+    MidRight   // NEW
 }
+

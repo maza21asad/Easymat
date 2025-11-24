@@ -9,6 +9,12 @@ public class GameManager : MonoBehaviour
     public BallSpawner spawner;
     public Transform topRight, topLeft, bottomLeft, bottomRight;
     public Transform centerPoint;
+    public Transform midLeft;
+    public Transform midRight;
+
+
+
+
 
     [Header("Gameplay Settings")]
     public float centerRadius = 2f;
@@ -22,6 +28,10 @@ public class GameManager : MonoBehaviour
     public Sprite greenBall;
     public Sprite blueBall;
     public Sprite yellowBall;
+
+    public Sprite purpleBall;
+    public Sprite cyanBall;
+
 
     [Header("UI")]
     public Text scoreText;
@@ -96,6 +106,8 @@ public class GameManager : MonoBehaviour
             case Corner.TopLeft: expected = BallColor.Blue; break;
             case Corner.BottomLeft: expected = BallColor.Green; break;
             case Corner.BottomRight: expected = BallColor.Yellow; break;
+            case Corner.MidLeft: expected = BallColor.Purple; break;    // NEW
+            case Corner.MidRight: expected = BallColor.Cyan; break;     // NEW
         }
 
         if (ball.ballColor == expected)
@@ -118,6 +130,7 @@ public class GameManager : MonoBehaviour
         UpdateUI();
         spawner.SpawnBall();
     }
+
 
     public void OnBallMissed(BallController ball)
     {
@@ -191,12 +204,20 @@ public class GameManager : MonoBehaviour
 
     private Corner GetCornerFromDirection(Vector2 dir)
     {
-        // Only 4 corners now
+        // Horizontal strong movement → mid corners
+        if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y) * 1.2f)
+        {
+            if (dir.x > 0) return Corner.MidRight;
+            else return Corner.MidLeft;
+        }
+
+        // Otherwise use diagonal up/down logic
         if (dir.x >= 0f && dir.y >= 0f) return Corner.TopRight;
         if (dir.x < 0f && dir.y >= 0f) return Corner.TopLeft;
         if (dir.x < 0f && dir.y < 0f) return Corner.BottomLeft;
         return Corner.BottomRight;
     }
+
 
     private Transform GetCornerTransform(Corner c)
     {
@@ -206,19 +227,25 @@ public class GameManager : MonoBehaviour
             case Corner.TopLeft: return topLeft;
             case Corner.BottomLeft: return bottomLeft;
             case Corner.BottomRight: return bottomRight;
+            case Corner.MidLeft: return midLeft;    // NEW
+            case Corner.MidRight: return midRight;  // NEW
         }
         return null;
     }
+
 
     public Sprite GetSprite(BallColor c)
     {
         switch (c)
         {
             case BallColor.Red: return redBall;
-            case BallColor.Green: return greenBall;
             case BallColor.Blue: return blueBall;
+            case BallColor.Green: return greenBall;
             case BallColor.Yellow: return yellowBall;
-            default: return redBall;
+            case BallColor.Purple: return purpleBall; // NEW
+            case BallColor.Cyan: return cyanBall;     // NEW
         }
+        return redBall;
     }
+
 }

@@ -21,8 +21,9 @@ public class BallController : MonoBehaviour
 
     public void InitRandom()
     {
-        int r = Random.Range(0, 4); // Only 4 colors now
+        int r = Random.Range(0, 6); // now 6 colors
         ballColor = (BallColor)r;
+
         sr.sprite = GameManager.Instance.GetSprite(ballColor);
         UpdateSpeed();
     }
