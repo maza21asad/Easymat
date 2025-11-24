@@ -8210,13 +8210,14 @@ MonoBehaviour:
   gameTime: 30
   timerText: {fileID: 0}
   windEnabled: 0
-  windStartAfter: 2
+  windStartAfter: 10
   windForceText: {fileID: 1331806067}
   settingsPanel: {fileID: 0}
   windParticles: {fileID: 1536746281}
   virtualCamera: {fileID: 78833754}
   moveSpeed: 2
   moveRange: 2.5
+  finalScoreText: {fileID: 1611158149}
   leftForce: -2.5
   rightForce: 2.5
 --- !u!114 &1549969907
@@ -8910,7 +8911,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2087607274
 RectTransform:
   m_ObjectHideFlags: 0
