@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     public float minSwipeDistance = 0.2f;
     public int maxMisses = 3;
 
+    public Text finalScoreText;
+
     [Header("Ball Sprites (Assign 4 images)")]
     public Sprite redBall;
     public Sprite greenBall;
@@ -136,11 +138,17 @@ public class GameManager : MonoBehaviour
         if (gameOverPanel) gameOverPanel.SetActive(true);
         if (scoreText) scoreText.gameObject.SetActive(false);
         if (livesText) livesText.gameObject.SetActive(false);
+
+        // 👉 Show final score
+        if (finalScoreText)
+            finalScoreText.text = "Final Score: " + score;
+
         Time.timeScale = 0f;
 
         if (audiomanager.Instance != null)
             audiomanager.Instance.StopMusic();
     }
+
 
     private void UpdateUI()
     {
@@ -163,6 +171,10 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         if (audiomanager.Instance != null)
             audiomanager.Instance.ResumeMusic();
+
+        if (finalScoreText)
+            finalScoreText.text = "";
+
 
         spawner.SpawnBall();
         UpdateUI();
