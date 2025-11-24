@@ -63,6 +63,15 @@ public class BlockManager : MonoBehaviour
     private Vector3 initialHolderPos;
     private float moveTimer = 0f;
 
+
+
+
+
+
+    [Header("Wind Force Settings")]
+    public float leftForce = -2.5f;
+    public float rightForce = 2.5f;
+
     private void Start()
     {
         initialHolderPos = holder.position;
@@ -188,9 +197,21 @@ public class BlockManager : MonoBehaviour
         {
             RotateWindParticles(blockScript.WindForce);
 
-            float displayForce = blockScript.WindForce;
+            /*float displayForce = blockScript.WindForce;
             displayForce = displayForce > 0 ? 2.5f : (displayForce < 0 ? -2.5f : 0f);
+            ShowWindForceText(displayForce);*/
+
+            float displayForce = 0f;
+
+            if (blockScript.WindForce > 0)
+                displayForce = rightForce;
+            else if (blockScript.WindForce < 0)
+                displayForce = leftForce;
+            else
+                displayForce = 0f;
+
             ShowWindForceText(displayForce);
+
         }
     }
     private void RotateWindParticles(float force)
@@ -244,7 +265,7 @@ public class BlockManager : MonoBehaviour
         }
     }
 
-    public void ShowWindForceText(float force)
+    /*public void ShowWindForceText(float force)
     {
         if (!windEnabled || windForceText == null) return;
 
@@ -262,7 +283,32 @@ public class BlockManager : MonoBehaviour
          .Append(windForceText.DOFade(0f, 0.5f))
          .Join(windForceText.transform.DOScale(0.8f, 0.5f))
          .OnComplete(() => windForceText.gameObject.SetActive(false));
+    }*/
+
+    public void ShowWindForceText(float force)
+    {
+        if (!windEnabled || windForceText == null) return;
+
+        string forceText = "0 Force";
+        if (force > 0) forceText = "Right Force";
+        else if (force < 0) forceText = "Left Force";
+
+        windForceText.text = forceText;
+
+        windForceText.gameObject.SetActive(true);
+        windForceText.alpha = 0f;
+        windForceText.transform.localScale = Vector3.zero;
+
+        Sequence s = DOTween.Sequence();
+        s.AppendInterval(0.7f)
+         .Append(windForceText.DOFade(1f, 0.25f))
+         .Join(windForceText.transform.DOScale(1f, 0.25f).SetEase(Ease.OutBack))
+         .AppendInterval(0.6f)
+         .Append(windForceText.DOFade(0f, 0.5f))
+         .Join(windForceText.transform.DOScale(0.8f, 0.5f))
+         .OnComplete(() => windForceText.gameObject.SetActive(false));
     }
+
 
 
     public void OpenSettings()
