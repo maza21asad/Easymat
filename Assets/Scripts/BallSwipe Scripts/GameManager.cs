@@ -13,6 +13,9 @@ public class GameManager : MonoBehaviour
     public Transform midRight;
 
 
+    [Header("Unlock Settings")]
+    public int unlockMiddleAtScore = 20;  // You can change this from Inspector
+    private bool middleUnlocked = false;
 
 
 
@@ -47,18 +50,23 @@ public class GameManager : MonoBehaviour
     public int score = 0;
     private int missCount = 0;
 
-    private void Awake()
-    {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+private void Awake()
+{
+    if (Instance == null) Instance = this;
+    else Destroy(gameObject);
 
-        if (gameOverPanel) gameOverPanel.SetActive(false);
+    // Ensure middle balls start disabled
+    if (midLeft) midLeft.gameObject.SetActive(false);
+    if (midRight) midRight.gameObject.SetActive(false);
 
-        if (restartButton) restartButton.onClick.AddListener(RestartGame);
-        if (exitButton) exitButton.onClick.AddListener(ExitGame);
+    if (gameOverPanel) gameOverPanel.SetActive(false);
 
-        UpdateUI();
-    }
+    if (restartButton) restartButton.onClick.AddListener(RestartGame);
+    if (exitButton) exitButton.onClick.AddListener(ExitGame);
+
+    UpdateUI();
+}
+
 
     private void Update()
     {
@@ -127,8 +135,14 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        //UpdateUI();
+        //spawner.SpawnBall();
+
+
         UpdateUI();
+        CheckUnlock();         // 🔵 ADD THIS LINE
         spawner.SpawnBall();
+
     }
 
 
@@ -143,7 +157,9 @@ public class GameManager : MonoBehaviour
             return;
         }
         UpdateUI();
+        CheckUnlock();         // 🔵 ADD THIS TOO
         spawner.SpawnBall();
+
     }
 
     private void GameOver()
@@ -246,6 +262,20 @@ public class GameManager : MonoBehaviour
             case BallColor.Cyan: return cyanBall;     // NEW
         }
         return redBall;
+    }
+
+    private void CheckUnlock()
+    {
+        if (!middleUnlocked && score >= unlockMiddleAtScore)
+        {
+            middleUnlocked = true;
+
+            if (midLeft) midLeft.gameObject.SetActive(true);
+            if (midRight) midRight.gameObject.SetActive(true);
+
+            if (spawner) spawner.middleColorsUnlocked = true; // 🔵 TELL SPAWNER TO USE 6 COLORS
+        }
+
     }
 
 }

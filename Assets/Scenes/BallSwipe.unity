@@ -805,6 +805,7 @@ MonoBehaviour:
   centerPoint: {fileID: 246817489}
   midLeft: {fileID: 1127271362}
   midRight: {fileID: 1406750758}
+  unlockMiddleAtScore: 20
   centerRadius: 2
   minSwipeDistance: 0.2
   maxMisses: 3
@@ -2266,7 +2267,8 @@ Transform:
   m_LocalPosition: {x: -1.99, y: 0.08, z: -0.04010416}
   m_LocalScale: {x: 1, y: 1, z: 1.7851}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2054118803}
   m_Father: {fileID: 982222192}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1127271363
@@ -2562,7 +2564,8 @@ Transform:
   m_LocalPosition: {x: 1.6591532, y: 0.08, z: -0.04010416}
   m_LocalScale: {x: 1, y: 1, z: 1.7851}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1691422956}
   m_Father: {fileID: 982222192}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1406750759
@@ -2741,6 +2744,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c0ed4c70c7178144a30ee92ef82411c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  middleColorsUnlocked: 0
   ballPrefab: {fileID: 3042789188659701968, guid: 309d981cbd3e1e54b81e97c4c21b4fab,
     type: 3}
   spawnPoint: {fileID: 34839595}
@@ -3254,11 +3258,11 @@ Transform:
   m_GameObject: {fileID: 1691422955}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.19, y: 2.11, z: 0.13192394}
+  m_LocalPosition: {x: -0.012966633, y: 0.014022745, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1881053119}
+  m_Father: {fileID: 1406750758}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1691422957
 SpriteRenderer:
@@ -3549,8 +3553,6 @@ Transform:
   - {fileID: 1102879022}
   - {fileID: 93150336}
   - {fileID: 1636263347}
-  - {fileID: 1691422956}
-  - {fileID: 2054118803}
   m_Father: {fileID: 566801706}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1987055544
@@ -3741,11 +3743,11 @@ Transform:
   m_GameObject: {fileID: 2054118802}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.84, y: 2.11, z: 0.13192394}
+  m_LocalPosition: {x: 0.28618646, y: 0.014022745, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1881053119}
+  m_Father: {fileID: 1127271362}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2054118804
 SpriteRenderer:

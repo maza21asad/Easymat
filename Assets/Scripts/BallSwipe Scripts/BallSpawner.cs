@@ -1,7 +1,18 @@
 ﻿using UnityEngine;
 
 public class BallSpawner : MonoBehaviour
+
+
+
+
 {
+
+
+    [Header("Spawn Settings")]
+    public bool middleColorsUnlocked = false;  // GameManager will control this
+
+
+
     public GameObject ballPrefab;
     public Transform spawnPoint;
     public GameManager gameManager;
@@ -31,7 +42,9 @@ public class BallSpawner : MonoBehaviour
         BallController bc = go.GetComponent<BallController>();
         if (bc == null) bc = go.AddComponent<BallController>();
 
-        bc.InitRandom();
+        int colorCount = middleColorsUnlocked ? 6 : 4;
+        bc.InitRandom(colorCount);
+
 
         if (gameManager != null)
             gameManager.currentBall = bc;
