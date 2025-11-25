@@ -12,12 +12,9 @@ public class GameManager : MonoBehaviour
     public Transform midLeft;
     public Transform midRight;
 
-
     [Header("Unlock Settings")]
-    public int unlockMiddleAtScore = 20;  // You can change this from Inspector
+    public int unlockMiddleAtScore = 20;
     private bool middleUnlocked = false;
-
-
 
     [Header("Gameplay Settings")]
     public float centerRadius = 2f;
@@ -26,15 +23,13 @@ public class GameManager : MonoBehaviour
 
     public Text finalScoreText;
 
-    [Header("Ball Sprites (Assign 4 images)")]
+    [Header("Ball Sprites (Assign 6 images)")]
     public Sprite redBall;
     public Sprite greenBall;
     public Sprite blueBall;
     public Sprite yellowBall;
-
     public Sprite purpleBall;
     public Sprite cyanBall;
-
 
     [Header("UI")]
     public Text scoreText;
@@ -50,23 +45,22 @@ public class GameManager : MonoBehaviour
     public int score = 0;
     private int missCount = 0;
 
-private void Awake()
-{
-    if (Instance == null) Instance = this;
-    else Destroy(gameObject);
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
-    // Ensure middle balls start disabled
-    if (midLeft) midLeft.gameObject.SetActive(false);
-    if (midRight) midRight.gameObject.SetActive(false);
+        // Start with middle balls hidden
+        if (midLeft) midLeft.gameObject.SetActive(false);
+        if (midRight) midRight.gameObject.SetActive(false);
 
-    if (gameOverPanel) gameOverPanel.SetActive(false);
+        if (gameOverPanel) gameOverPanel.SetActive(false);
 
-    if (restartButton) restartButton.onClick.AddListener(RestartGame);
-    if (exitButton) exitButton.onClick.AddListener(ExitGame);
+        if (restartButton) restartButton.onClick.AddListener(RestartGame);
+        if (exitButton) exitButton.onClick.AddListener(ExitGame);
 
-    UpdateUI();
-}
-
+        UpdateUI();
+    }
 
     private void Update()
     {
@@ -94,6 +88,14 @@ private void Awake()
             if (Vector2.Distance(currentBall.transform.position, center) <= centerRadius)
             {
                 Corner corner = GetCornerFromDirection(swipe);
+
+                // ❌ Block mid-left & mid-right swipes before unlock
+                if (!middleUnlocked &&
+                    (corner == Corner.MidLeft || corner == Corner.MidRight))
+                {
+                    return;
+                }
+
                 Transform cornerTransform = GetCornerTransform(corner);
 
                 if (cornerTransform != null && currentBall != null)
@@ -114,8 +116,8 @@ private void Awake()
             case Corner.TopLeft: expected = BallColor.Blue; break;
             case Corner.BottomLeft: expected = BallColor.Green; break;
             case Corner.BottomRight: expected = BallColor.Yellow; break;
-            case Corner.MidLeft: expected = BallColor.Purple; break;    // NEW
-            case Corner.MidRight: expected = BallColor.Cyan; break;     // NEW
+            case Corner.MidLeft: expected = BallColor.Purple; break;
+            case Corner.MidRight: expected = BallColor.Cyan; break;
         }
 
         if (ball.ballColor == expected)
@@ -135,16 +137,10 @@ private void Awake()
             }
         }
 
-        //UpdateUI();
-        //spawner.SpawnBall();
-
-
         UpdateUI();
-        CheckUnlock();         // 🔵 ADD THIS LINE
+        CheckUnlock();
         spawner.SpawnBall();
-
     }
-
 
     public void OnBallMissed(BallController ball)
     {
@@ -156,10 +152,10 @@ private void Awake()
             GameOver();
             return;
         }
-        UpdateUI();
-        CheckUnlock();         // 🔵 ADD THIS TOO
-        spawner.SpawnBall();
 
+        UpdateUI();
+        CheckUnlock();
+        spawner.SpawnBall();
     }
 
     private void GameOver()
@@ -168,7 +164,6 @@ private void Awake()
         if (scoreText) scoreText.gameObject.SetActive(false);
         if (livesText) livesText.gameObject.SetActive(false);
 
-        // 👉 Show final score
         if (finalScoreText)
             finalScoreText.text = "Final Score: " + score;
 
@@ -177,7 +172,6 @@ private void Awake()
         if (audiomanager.Instance != null)
             audiomanager.Instance.StopMusic();
     }
-
 
     private void UpdateUI()
     {
@@ -198,12 +192,18 @@ private void Awake()
             Destroy(currentBall.gameObject);
 
         Time.timeScale = 1f;
+
         if (audiomanager.Instance != null)
             audiomanager.Instance.ResumeMusic();
 
         if (finalScoreText)
             finalScoreText.text = "";
 
+        // Reset unlock state
+        middleUnlocked = false;
+        if (midLeft) midLeft.gameObject.SetActive(false);
+        if (midRight) midRight.gameObject.SetActive(false);
+        if (spawner) spawner.middleColorsUnlocked = false;
 
         spawner.SpawnBall();
         UpdateUI();
@@ -220,20 +220,19 @@ private void Awake()
 
     private Corner GetCornerFromDirection(Vector2 dir)
     {
-        // Horizontal strong movement → mid corners
+        // Horizontal swipe → mid corners
         if (Mathf.Abs(dir.x) > Mathf.Abs(dir.y) * 1.2f)
         {
             if (dir.x > 0) return Corner.MidRight;
             else return Corner.MidLeft;
         }
 
-        // Otherwise use diagonal up/down logic
+        // Diagonal corners
         if (dir.x >= 0f && dir.y >= 0f) return Corner.TopRight;
         if (dir.x < 0f && dir.y >= 0f) return Corner.TopLeft;
         if (dir.x < 0f && dir.y < 0f) return Corner.BottomLeft;
         return Corner.BottomRight;
     }
-
 
     private Transform GetCornerTransform(Corner c)
     {
@@ -243,12 +242,11 @@ private void Awake()
             case Corner.TopLeft: return topLeft;
             case Corner.BottomLeft: return bottomLeft;
             case Corner.BottomRight: return bottomRight;
-            case Corner.MidLeft: return midLeft;    // NEW
-            case Corner.MidRight: return midRight;  // NEW
+            case Corner.MidLeft: return midLeft;
+            case Corner.MidRight: return midRight;
         }
         return null;
     }
-
 
     public Sprite GetSprite(BallColor c)
     {
@@ -258,8 +256,8 @@ private void Awake()
             case BallColor.Blue: return blueBall;
             case BallColor.Green: return greenBall;
             case BallColor.Yellow: return yellowBall;
-            case BallColor.Purple: return purpleBall; // NEW
-            case BallColor.Cyan: return cyanBall;     // NEW
+            case BallColor.Purple: return purpleBall;
+            case BallColor.Cyan: return cyanBall;
         }
         return redBall;
     }
@@ -273,9 +271,7 @@ private void Awake()
             if (midLeft) midLeft.gameObject.SetActive(true);
             if (midRight) midRight.gameObject.SetActive(true);
 
-            if (spawner) spawner.middleColorsUnlocked = true; // 🔵 TELL SPAWNER TO USE 6 COLORS
+            if (spawner) spawner.middleColorsUnlocked = true;
         }
-
     }
-
 }
