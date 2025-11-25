@@ -15,17 +15,17 @@ public class GameOverWindow : MonoBehaviour
     private void Start()
     {
         // Make sure the panel is hidden at start
-        if (gameOverPanel != null)
+        if (gameOverPanel == null)
             gameOverPanel.SetActive(false);
 
         // Hook up button events
-        if (playAgainButton != null)
+        if (playAgainButton == null)
             playAgainButton.onClick.AddListener(RestartGame);
 
         //if (exitButton != null)
         //    exitButton.onClick.AddListener(ExitGame);
 
-        if (returnHomeButton != null)
+        if (returnHomeButton == null)
             returnHomeButton.onClick.AddListener(() => LoadScene(returnSceneName));
     }
 
@@ -46,12 +46,6 @@ public class GameOverWindow : MonoBehaviour
         Debug.Log("Play Again Clicked!");
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-
-    private void ExitGame()
-    {
-        Application.Quit();
-        Debug.Log("Quit Game!");
     }
 
     public void LoadScene(string sceneName)
