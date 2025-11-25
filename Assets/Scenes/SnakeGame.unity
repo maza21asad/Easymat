@@ -1252,6 +1252,7 @@ MonoBehaviour:
   exitConfirmPanel: {fileID: 214261054}
   settingsButton: {fileID: 1767077139}
   continueButton: {fileID: 429273226}
+  crossButton: {fileID: 3225231364662648280}
   exitButton: {fileID: 811473602}
   exitYesButton: {fileID: 1894389393}
   exitNoButton: {fileID: 563517974}
