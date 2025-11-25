@@ -22,6 +22,14 @@ public class LevelGrid
     private GameObject diamondAppleObject;
     private bool diamondAppleActive = false;
 
+    // Metal apple
+    private Vector2Int metalApplePosition;
+    private GameObject metalAppleObject;
+    private bool metalAppleActive = false;
+    private float metalAppleDuration = 10f;
+    private float metalAppleTimer = 0f;
+    private bool metalAppleWaiting = false; // triggered every 15 apples
+
     private int width;
     private int height;
     private Snake snake;
@@ -36,6 +44,25 @@ public class LevelGrid
             {
                 Object.Destroy(goldenAppleObject);
                 goldenAppleActive = false;
+            }
+        }
+
+        // METAL APPLE countdown
+        if (metalAppleActive)
+        {
+            metalAppleTimer -= Time.deltaTime;
+
+            GameHandler.ShowMetalWarning("Eat the metal apple! Time left: " + metalAppleTimer.ToString("F1"));
+
+            if (metalAppleTimer <= 0f)
+            {
+                metalAppleActive = false;
+                Object.Destroy(metalAppleObject);
+
+                GameHandler.HideMetalWarning();
+
+                // === SNAKE GAME OVER (same as collision) ===
+                snake.SendMessage("ForceGameOver");
             }
         }
     }
@@ -101,6 +128,26 @@ public class LevelGrid
         diamondAppleActive = true;
     }
 
+    private void SpawnMetalApple()
+    {
+        do
+        {
+            metalApplePosition = new Vector2Int(Random.Range(0, width), Random.Range(0, height));
+        }
+        while (snake.GetFullSnakeGridPositionList().Contains(metalApplePosition));
+
+        metalAppleObject = new GameObject("MetalApple", typeof(SpriteRenderer));
+        metalAppleObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.metalAppleSprite;
+
+        metalAppleObject.transform.position = new Vector3(metalApplePosition.x, metalApplePosition.y, 0);
+
+        metalAppleActive = true;
+        metalAppleTimer = metalAppleDuration;
+
+        GameHandler.ShowMetalWarning("Eat the Metal Apple in 7 seconds!");
+    }
+
+
     public bool TrySnakeEatFood(Vector2Int snakeGridPosition)
     {
         // RED APPLE = Grow + 10 points
@@ -128,6 +175,12 @@ public class LevelGrid
                 }
             }
 
+            // Every 15 red apples → Metal apple MUST appear
+            if (redAppleEatCount % 15 == 0 && !metalAppleActive)
+            {
+                SpawnMetalApple();
+            }
+
             return true; // grow
         }
 
@@ -153,9 +206,19 @@ public class LevelGrid
             return false; // no grow
         }
 
+        if (metalAppleActive && snakeGridPosition == metalApplePosition)
+        {
+            Object.Destroy(metalAppleObject);
+            metalAppleActive = false;
+
+            GameHandler.HideMetalWarning();
+
+            // Metal apple gives no score, no growth
+            return false;
+        }
+
         return false;
     }
-
 
     public Vector2Int ValidateGridPosition(Vector2Int gridPosition)
     {

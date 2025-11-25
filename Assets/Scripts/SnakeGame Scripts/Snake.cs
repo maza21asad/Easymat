@@ -430,4 +430,14 @@ public class Snake : MonoBehaviour
             }
         }
     }
+
+
+    public void ForceGameOver()
+    {
+        state = State.Dead;
+
+        if (gameOverWindow != null)
+            gameOverWindow.ShowGameOver();
+    }
+
 }
