@@ -67,6 +67,14 @@ public class BlockManager : MonoBehaviour
 
 
 
+    [Header("Initial Block Timer")]
+    public float firstBlockLimit = 30f;   // 30-sec timer
+    private float firstBlockTimer = 0f;
+    private bool isFirstBlockTimerRunning = true;
+    private int landedBlockCount = 0;
+
+
+
 
 
 
@@ -94,7 +102,7 @@ public class BlockManager : MonoBehaviour
     }
 
 
-    private void Update()
+    /*private void Update()
     {
         if (isTimerRunning)
         {
@@ -114,7 +122,52 @@ public class BlockManager : MonoBehaviour
                 canSpawn = false;
             }
         }
+    }*/
+
+
+
+    private void Update()
+    {
+        // ---------------------- MAIN GAME TIMER ----------------------
+        if (isTimerRunning)
+        {
+            timer -= Time.deltaTime;
+
+            if (timerText != null)
+                timerText.text = Mathf.Ceil(timer).ToString();
+
+            if (timer <= 0)
+            {
+                isTimerRunning = false;
+                timerText.text = "Time: 0";
+
+                if (gamePanel != null) gamePanel.SetActive(false);
+                if (newPanel != null) newPanel.SetActive(true);
+
+                canSpawn = false;
+            }
+        }
+
+
+        // ---------------------- FIRST 30 SEC / 9 BLOCK TIMER ----------------------
+        if (isFirstBlockTimerRunning)
+        {
+            firstBlockTimer += Time.deltaTime;
+
+            // If 30 seconds passed AND less than 9 blocks placed ? END GAME
+            if (firstBlockTimer >= firstBlockLimit)
+            {
+                if (landedBlockCount < 9)
+                {
+                    EndGame();
+                }
+
+                // Stop this timer after 30 sec (or after 9 blocks)
+                isFirstBlockTimerRunning = false;
+            }
+        }
     }
+
 
 
     public void RestartGame()
@@ -155,6 +208,16 @@ public class BlockManager : MonoBehaviour
 
     public void OnBlockLanded(Transform landedBlock)
     {
+
+        landedBlockCount++;
+
+        // If player reaches 9 blocks before 30 seconds ? stop the 30-sec timer
+        if (isFirstBlockTimerRunning && landedBlockCount >= 9)
+        {
+            isFirstBlockTimerRunning = false;
+        }
+
+
         AddScore(10);
 
         topBlock = landedBlock;
