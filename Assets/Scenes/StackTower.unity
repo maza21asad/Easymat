@@ -8796,7 +8796,7 @@ MonoBehaviour:
   gameTime: 30
   timerText: {fileID: 0}
   windEnabled: 0
-  windStartAfter: 2
+  windStartAfter: 10
   windForceText: {fileID: 1331806067}
   settingsPanel: {fileID: 0}
   windParticles: {fileID: 1536746281}
