@@ -74,8 +74,10 @@ public class BlockManager : MonoBehaviour
     private int landedBlockCount = 0;
 
 
-
-
+    [Header("Sound Settings")]
+    public AudioSource fallSound;
+    public AudioSource gameOverSound;
+    public AudioSource windSound;
 
 
 
@@ -208,15 +210,13 @@ public class BlockManager : MonoBehaviour
 
     public void OnBlockLanded(Transform landedBlock)
     {
+        if (fallSound != null)
+            fallSound.Play();
 
         landedBlockCount++;
 
-        // If player reaches 9 blocks before 30 seconds ? stop the 30-sec timer
         if (isFirstBlockTimerRunning && landedBlockCount >= 9)
-        {
             isFirstBlockTimerRunning = false;
-        }
-
 
         AddScore(10);
 
@@ -226,10 +226,13 @@ public class BlockManager : MonoBehaviour
 
         if (!windEnabled && blockCount >= windStartAfter)
             windEnabled = true;
+        if (windSound != null && !windSound.isPlaying)
+            windSound.Play();
 
         if (canSpawn)
             StartCoroutine(SpawnNextBlock());
     }
+
 
     private IEnumerator SpawnNextBlock()
     {
@@ -314,10 +317,13 @@ public class BlockManager : MonoBehaviour
 
     public void EndGame()
     {
+        // Play game over sound
+        if (gameOverSound != null)
+            gameOverSound.Play();
+
         if (gamePanel != null) gamePanel.SetActive(false);
         if (newPanel != null) newPanel.SetActive(true);
 
-        // Show final score
         if (finalScoreText != null)
             finalScoreText.text = "" + score;
 
@@ -327,13 +333,13 @@ public class BlockManager : MonoBehaviour
         if (holder != null)
             holder.gameObject.SetActive(false);
 
-        // ?? Destroy all spawned blocks in the scene
         Block[] allBlocks = FindObjectsOfType<Block>();
         foreach (var block in allBlocks)
         {
             Destroy(block.gameObject);
         }
     }
+
 
 
 
