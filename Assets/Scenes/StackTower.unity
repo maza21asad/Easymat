@@ -482,7 +482,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 78833753}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44d70cc20219cd84593f67d248eafe36, type: 3}
   m_Name: 
@@ -1178,8 +1178,8 @@ Transform:
   m_GameObject: {fileID: 419372846}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.16819999, y: 3.653, z: 0}
-  m_LocalScale: {x: 0.34622315, y: 0.3925713, z: 1}
+  m_LocalPosition: {x: 0.1591, y: 4.18, z: 0}
+  m_LocalScale: {x: 0.40322104, y: 0.34406808, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -3221,17 +3221,17 @@ PrefabInstance:
     - target: {fileID: 107803387623998639, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.97368413
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 107803387623998639, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.97368413
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 107803387623998639, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.97368413
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 107803387623998639, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
@@ -3271,12 +3271,12 @@ PrefabInstance:
     - target: {fileID: 107803387623998639, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 0.18
       objectReference: {fileID: 0}
     - target: {fileID: 107803387623998639, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -1.4
       objectReference: {fileID: 0}
     - target: {fileID: 107803387623998639, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
@@ -8785,31 +8785,33 @@ MonoBehaviour:
   blockPrefab: {fileID: 6861439240962131306, guid: 5f7b8417c15263e4f84d75557979ff8a,
     type: 3}
   spawnPoint: {fileID: 1878439704}
-  spawnHeightOffset: 4
+  spawnHeightOffset: 5
   cameraTarget: {fileID: 1918244037}
   score: 0
   scoreText: {fileID: 730614895}
-  holderStepUp: 0.5
+  holderStepUp: 0.4
   holder: {fileID: 419372848}
   newPanel: {fileID: 2087607273}
   gamePanel: {fileID: 0}
   gameTime: 30
-  timerText: {fileID: 0}
+  timerText: {fileID: 928050079}
   windEnabled: 0
-  windStartAfter: 10
+  windStartAfter: 2
   windForceText: {fileID: 1331806067}
   settingsPanel: {fileID: 0}
   windParticles: {fileID: 1536746281}
   virtualCamera: {fileID: 78833754}
-  moveSpeed: 1.5
+  moveSpeed: 1
   moveRange: 2.5
   finalScoreText: {fileID: 1611158149}
   firstBlockLimit: 30
   fallSound: {fileID: 1549969908}
   gameOverSound: {fileID: 331839873}
   windSound: {fileID: 128040672}
-  leftForce: -2.5
-  rightForce: 2.5
+  leftForce: -2
+  rightForce: 2
+  snapThreshold: 0.4
+  failThreshold: 1.2
 --- !u!114 &1549969907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9575,7 +9577,7 @@ Transform:
   m_GameObject: {fileID: 1878439703}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 662, z: -5}
+  m_LocalPosition: {x: 0, y: 0, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9597,7 +9599,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1918244036
 RectTransform:
   m_ObjectHideFlags: 0
