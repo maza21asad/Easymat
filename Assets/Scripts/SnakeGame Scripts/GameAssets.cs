@@ -16,6 +16,10 @@ public class GameAssets : MonoBehaviour
     public Sprite diamondAppleSprite;
     public Sprite metalAppleSprite;
 
+    [Header("Apple Timer UI Sprites")]
+    public Sprite circleSprite;
+
+
     private void Awake()
     {
         Instance = this;

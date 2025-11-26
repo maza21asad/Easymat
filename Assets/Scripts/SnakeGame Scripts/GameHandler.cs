@@ -5,14 +5,14 @@ using UnityEngine.UI;
 
 public class GameHandler : MonoBehaviour
 {
-    private static GameHandler instance;
+    public static GameHandler instance;
 
     private static int score;
 
-    //public static Text metalAppleWarningText; //New
-    [SerializeField] private Text metalAppleWarningText; // FIXED (not static)
-
     [SerializeField] private Snake snake;
+    [SerializeField] private Text metalAppleWarningText;
+    public Canvas mainCanvas;
+
     private LevelGrid LevelGrid;
 
     private void Awake()
@@ -28,7 +28,6 @@ public class GameHandler : MonoBehaviour
         LevelGrid.Setup(snake);
     }
 
-    // ==================================================== added new ============================================================
     private void Update()
     {
         if (LevelGrid != null)

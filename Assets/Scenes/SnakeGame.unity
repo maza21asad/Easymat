@@ -277,7 +277,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -38.640015}
+  m_AnchoredPosition: {x: 0, y: -38.640137}
   m_SizeDelta: {x: 0, y: -267.53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &61243242
@@ -1691,8 +1691,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df9ff8db5a31934d8f9f0408f509288, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  metalAppleWarningText: {fileID: 361719116}
   snake: {fileID: 1690102607}
+  metalAppleWarningText: {fileID: 361719116}
+  mainCanvas: {fileID: 1961899374}
 --- !u!1 &1197744822
 GameObject:
   m_ObjectHideFlags: 0
@@ -2534,6 +2535,7 @@ MonoBehaviour:
   goldenAppleSprite: {fileID: 21300000, guid: 85fb971046c757b439eb3bc8ef28ac1d, type: 3}
   diamondAppleSprite: {fileID: 21300000, guid: 42c2d0f0a57517c4fa1064b73afac5ff, type: 3}
   metalAppleSprite: {fileID: 21300000, guid: fef311b1fd0f2524d96039c14495b9f1, type: 3}
+  circleSprite: {fileID: 21300000, guid: b435f566d5175fc448a1797c79b950cf, type: 3}
 --- !u!1 &1894389391
 GameObject:
   m_ObjectHideFlags: 0

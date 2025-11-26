@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LevelGrid
 {
@@ -16,6 +17,8 @@ public class LevelGrid
     private float goldenAppleTimer;
     private float goldenAppleDuration = 5f; // 5 seconds
     private bool goldenAppleActive = false;
+
+    private Image goldenAppleCircleUI;
 
     // Diamond apple
     private Vector2Int diamondApplePosition;
@@ -40,10 +43,18 @@ public class LevelGrid
         {
             goldenAppleTimer -= Time.deltaTime;
 
+            if (goldenAppleCircleUI != null)
+            {
+                goldenAppleCircleUI.fillAmount = goldenAppleTimer / goldenAppleDuration;
+            }
+
             if (goldenAppleTimer <= 0f)
             {
                 Object.Destroy(goldenAppleObject);
                 goldenAppleActive = false;
+
+                if (goldenAppleCircleUI != null)
+                    GameObject.Destroy(goldenAppleCircleUI.gameObject);
             }
         }
 
@@ -110,6 +121,9 @@ public class LevelGrid
 
         goldenAppleActive = true;
         goldenAppleTimer = goldenAppleDuration;
+
+        goldenAppleCircleUI = CreateGoldenAppleCircleUI();
+        goldenAppleCircleUI.fillAmount = 1f;
     }
 
     private void SpawnDiamondApple()
@@ -176,7 +190,7 @@ public class LevelGrid
             }
 
             // Every 15 red apples → Metal apple MUST appear
-            if (redAppleEatCount % 15 == 0 && !metalAppleActive)
+            if (redAppleEatCount % 12 == 0 && !metalAppleActive)
             {
                 SpawnMetalApple();
             }
@@ -189,6 +203,9 @@ public class LevelGrid
         {
             Object.Destroy(goldenAppleObject);
             goldenAppleActive = false;
+
+            if (goldenAppleCircleUI != null)
+                GameObject.Destroy(goldenAppleCircleUI.gameObject);
 
             GameHandler.AddScore(50);
 
@@ -219,6 +236,29 @@ public class LevelGrid
 
         return false;
     }
+
+    private Image CreateGoldenAppleCircleUI()
+    {
+        GameObject uiObj = new GameObject("GoldenAppleTimerCircle");
+        uiObj.transform.SetParent(GameHandler.instance.mainCanvas.transform, false);
+
+        Image img = uiObj.AddComponent<Image>();
+        img.sprite = GameAssets.Instance.circleSprite;
+
+        img.color = new Color(1f, 0.9f, 0f, 0.9f);
+
+        img.type = Image.Type.Filled;
+        img.fillMethod = Image.FillMethod.Radial360;
+        img.fillOrigin = 2;
+        img.fillClockwise = false;
+
+        RectTransform rt = img.rectTransform;
+        rt.sizeDelta = new Vector2(60, 60);
+
+        return img;
+    }
+
+
 
     public Vector2Int ValidateGridPosition(Vector2Int gridPosition)
     {
