@@ -46,6 +46,14 @@ public class LevelGrid
             if (goldenAppleCircleUI != null)
             {
                 goldenAppleCircleUI.fillAmount = goldenAppleTimer / goldenAppleDuration;
+
+                //// Update the position
+                //if (goldenAppleObject != null)
+                //{
+                //    Vector3 worldPos = goldenAppleObject.transform.position;
+                //    Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+                //    goldenAppleCircleUI.rectTransform.position = screenPos;
+                //}
             }
 
             if (goldenAppleTimer <= 0f)
