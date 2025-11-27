@@ -20,7 +20,7 @@ public class LevelGrid
 
     private RectTransform goldenAppleCircleRect; // store rect for easy positioning
 
-    private Image goldenAppleCircleUI;
+    private Image appleCircleUI;
 
     // Diamond apple
     private Vector2Int diamondApplePosition;
@@ -41,123 +41,22 @@ public class LevelGrid
 
     public void Update()
     {
-        //if (goldenAppleActive)
-        //{
-        //    goldenAppleTimer -= Time.deltaTime;
-
-        //    if (goldenAppleCircleUI != null)
-        //    {
-        //        //goldenAppleCircleUI.fillAmount = goldenAppleTimer / goldenAppleDuration;
-        //        // Update fill
-        //        goldenAppleCircleUI.fillAmount = Mathf.Clamp01(goldenAppleTimer / goldenAppleDuration);
-
-        //        // Update UI position (follows apple)
-        //        //Vector3 worldPos = goldenAppleObject.transform.position;
-        //        ////Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
-        //        //Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
-        //        //goldenAppleCircleUI.rectTransform.position = screenPos;
-        //    }
-
-        //    if (goldenAppleTimer <= 0f)
-        //    {
-        //        Object.Destroy(goldenAppleObject);
-        //        goldenAppleActive = false;
-
-        //        if (goldenAppleCircleUI != null)
-        //            GameObject.Destroy(goldenAppleCircleUI.gameObject);
-        //    }
-        //}
-
-        //================================
-
-        //if (goldenAppleActive)
-        //{
-        //    goldenAppleTimer -= Time.deltaTime;
-
-        //    // Update fill
-        //    if (goldenAppleCircleUI != null)
-        //    {
-        //        goldenAppleCircleUI.fillAmount = Mathf.Clamp01(goldenAppleTimer / goldenAppleDuration);
-        //    }
-
-        //    // Position the UI above the apple (robust conversion to canvas space)
-        //    if (goldenAppleCircleUI != null && goldenAppleObject != null)
-        //    {
-        //        Canvas canvas = GameHandler.instance.MainCanvas;
-        //        if (canvas == null)
-        //        {
-        //            Debug.LogWarning("MainCanvas is null on GameHandler. Assign the Canvas in the inspector.");
-        //        }
-        //        else if (Camera.main == null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
-        //        {
-        //            Debug.LogWarning("Camera.main is null and Canvas is not ScreenSpace-Overlay. Assign a camera or set Canvas to Overlay.");
-        //        }
-        //        else
-        //        {
-        //            // world -> screen
-        //            Vector3 worldPos = goldenAppleObject.transform.position;
-        //            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, worldPos);
-
-        //            // convert screen point to local point in canvas
-        //            RectTransform canvasRect = canvas.GetComponent<RectTransform>();
-        //            Vector2 localPoint;
-        //            bool ok = RectTransformUtility.ScreenPointToLocalPointInRectangle(
-        //                canvasRect, screenPoint, canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : Camera.main, out localPoint);
-
-        //            if (ok)
-        //            {
-        //                RectTransform uiRT = goldenAppleCircleUI.rectTransform;
-
-        //                // Ensure pivot/anchor so anchoredPosition works predictably
-        //                uiRT.pivot = new Vector2(0.5f, 0.5f);
-        //                uiRT.anchorMin = uiRT.anchorMax = new Vector2(0.5f, 0.5f);
-
-        //                // place UI slightly above the apple (offset in local canvas space)
-        //                float yOffsetPixels = 10f; // adjust visually
-        //                uiRT.anchoredPosition = localPoint + new Vector2(0f, yOffsetPixels);
-        //            }
-        //            else
-        //            {
-        //                // fallback: try direct screen-to-world assignment (less reliable)
-        //                Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
-        //                goldenAppleCircleUI.rectTransform.position = screenPos;
-        //            }
-        //        }
-        //    }
-
-        //    // Timer finished
-        //    if (goldenAppleTimer <= 0f)
-        //    {
-        //        if (goldenAppleObject != null) Object.Destroy(goldenAppleObject);
-        //        goldenAppleActive = false;
-
-        //        if (goldenAppleCircleUI != null)
-        //            GameObject.Destroy(goldenAppleCircleUI.gameObject);
-
-        //        goldenAppleCircleUI = null;
-        //    }
-        //}
-
         if (goldenAppleActive)
         {
             goldenAppleTimer -= Time.deltaTime;
 
-            if (goldenAppleCircleUI != null)
-                goldenAppleCircleUI.fillAmount = goldenAppleTimer / goldenAppleDuration;
+            if (appleCircleUI != null)
+                appleCircleUI.fillAmount = goldenAppleTimer / goldenAppleDuration;
 
             if (goldenAppleTimer <= 0f)
             {
                 Object.Destroy(goldenAppleObject);
                 goldenAppleActive = false;
 
-                if (goldenAppleCircleUI != null)
-                    GameObject.Destroy(goldenAppleCircleUI.gameObject);
+                if (appleCircleUI != null)
+                    GameObject.Destroy(appleCircleUI.gameObject);
             }
         }
-
-
-
-        //==========================================
 
         // METAL APPLE countdown
         if (metalAppleActive)
@@ -165,6 +64,10 @@ public class LevelGrid
             metalAppleTimer -= Time.deltaTime;
 
             GameHandler.ShowMetalWarning("Eat the metal apple! Time left: " + metalAppleTimer.ToString("F1"));
+
+            // The timer
+            if (appleCircleUI != null)
+                appleCircleUI.fillAmount = goldenAppleTimer / goldenAppleDuration;
 
             if (metalAppleTimer <= 0f)
             {
@@ -175,6 +78,10 @@ public class LevelGrid
 
                 // === SNAKE GAME OVER (same as collision) ===
                 snake.SendMessage("ForceGameOver");
+
+                // The timer
+                if (appleCircleUI != null)
+                    GameObject.Destroy(appleCircleUI.gameObject);
             }
         }
     }
@@ -225,7 +132,7 @@ public class LevelGrid
         //goldenAppleCircleUI = CreateGoldenAppleCircleUI();
         //goldenAppleCircleUI.fillAmount = 1f;
 
-        goldenAppleCircleUI = CreateWorldTimer(GameAssets.Instance.circleSprite, new Color(0f, 1f, 0f, 1f), 1.2f, goldenAppleObject.transform);
+        appleCircleUI = CreateWorldTimer(GameAssets.Instance.circleSprite, new Color(0f, 1f, 0f, 0.05f), 3f, goldenAppleObject.transform);
     }
 
     private void SpawnDiamondApple()
@@ -261,6 +168,8 @@ public class LevelGrid
         metalAppleTimer = metalAppleDuration;
 
         GameHandler.ShowMetalWarning("Eat the Metal Apple in 7 seconds!");
+
+        appleCircleUI = CreateWorldTimer(GameAssets.Instance.circleSprite, new Color(0f, 0f, 1f, 0.05f), 3f, metalAppleObject.transform);
     }
 
 
@@ -292,7 +201,7 @@ public class LevelGrid
             }
 
             // Every 15 red apples → Metal apple MUST appear
-            if (redAppleEatCount % 12 == 0 && !metalAppleActive)
+            if (redAppleEatCount % 3 == 0 && !metalAppleActive)
             {
                 SpawnMetalApple();
             }
@@ -305,10 +214,10 @@ public class LevelGrid
             Object.Destroy(goldenAppleObject);
             goldenAppleActive = false;
 
-            if (goldenAppleCircleUI != null)
+            if (appleCircleUI != null)
             {
-                GameObject.Destroy(goldenAppleCircleUI.gameObject);
-                goldenAppleCircleUI = null;
+                GameObject.Destroy(appleCircleUI.gameObject);
+                appleCircleUI = null;
                 goldenAppleCircleRect = null;
             }
 
@@ -375,28 +284,6 @@ public class LevelGrid
 
         return img;
     }
-    //private Image CreateGoldenAppleCircleUI()
-    //{
-    //    // Create UI under main canvas
-    //    GameObject uiObj = new GameObject("GoldenAppleTimerCircle");
-    //    uiObj.transform.SetParent(GameHandler.instance.MainCanvas.transform, false);
-
-    //    Image img = uiObj.AddComponent<Image>();
-    //    img.sprite = GameAssets.Instance.circleSprite;
-    //    img.color = new Color(1f, 0.92f, 0.2f, 0.95f);
-
-    //    img.type = Image.Type.Filled;
-    //    img.fillMethod = Image.FillMethod.Radial360;
-    //    img.fillOrigin = (int)Image.Origin360.Top;
-    //    img.fillClockwise = false;
-    //    img.fillAmount = 1f;
-
-    //    RectTransform rt = img.rectTransform;
-    //    rt.sizeDelta = new Vector2(60, 60);
-
-    //    return img;
-    //}
-
 
     public Vector2Int ValidateGridPosition(Vector2Int gridPosition)
     {
