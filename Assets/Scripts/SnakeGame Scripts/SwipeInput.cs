@@ -17,7 +17,7 @@ public class SwipeInput : MonoBehaviour
     {
         swipeDirection = SwipeDirection.None;
 
-#if UNITY_EDITOR || UNITY_STANDALONE
+//#if UNITY_EDITOR || UNITY_STANDALONE
         // For testing in Editor with mouse drag
         if (Input.GetMouseButtonDown(0))
         {
@@ -30,26 +30,26 @@ public class SwipeInput : MonoBehaviour
             DetectSwipe();
             isSwiping = false;
         }
-#else
-        // For mobile
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-            switch (touch.phase)
-            {
-                case TouchPhase.Began:
-                    startTouchPos = touch.position;
-                    isSwiping = true;
-                    break;
+//#else
+//        // For mobile
+//        if (Input.touchCount > 0)
+//        {
+//            Touch touch = Input.GetTouch(0);
+//            switch (touch.phase)
+//            {
+//                case TouchPhase.Began:
+//                    startTouchPos = touch.position;
+//                    isSwiping = true;
+//                    break;
 
-                case TouchPhase.Ended:
-                    endTouchPos = touch.position;
-                    DetectSwipe();
-                    isSwiping = false;
-                    break;
-            }
-        }
-#endif
+//                case TouchPhase.Ended:
+//                    endTouchPos = touch.position;
+//                    DetectSwipe();
+//                    isSwiping = false;
+//                    break;
+//            }
+//        }
+//#endif
     }
 
     private void DetectSwipe()

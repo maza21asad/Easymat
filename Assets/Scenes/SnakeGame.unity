@@ -982,8 +982,8 @@ Transform:
   m_GameObject: {fileID: 571525010}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0955, y: -0.1877, z: 0}
-  m_LocalScale: {x: 0.45514718, y: 0.42423597, z: 0.036}
+  m_LocalPosition: {x: 0.0726, y: -0.1877, z: 0}
+  m_LocalScale: {x: 0.47685215, y: 0.42423597, z: 0.036}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1946863307}
@@ -2206,8 +2206,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: c296c6d714fa68546a1789792bc97eb7, type: 3}
+  m_SortingOrder: 1
+  m_Sprite: {fileID: 21300000, guid: 693bf8aa4c6573449856edec9599f720, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2526,9 +2526,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dde7b2d9cd9e994db879eac661f64fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  snakeHeadSprite: {fileID: 21300000, guid: c296c6d714fa68546a1789792bc97eb7, type: 3}
-  snakeBodySprite: {fileID: 21300000, guid: c21c40d29a5a8974785b492998ca19bc, type: 3}
-  snakeBodyCornerSprite: {fileID: 21300000, guid: 4dd3bb4fab244bb4db5aecef6fae005f,
+  snakeHeadSprite: {fileID: 21300000, guid: 693bf8aa4c6573449856edec9599f720, type: 3}
+  snakeBodySprite: {fileID: 21300000, guid: 8ce54ed058eb3ae49933f4560752b64a, type: 3}
+  snakeBodyCornerSprite: {fileID: 21300000, guid: eccc136f13fecb24dbed0bc71472f811,
     type: 3}
   snakeTailSprite: {fileID: 0}
   redAppleSprite: {fileID: 21300000, guid: de813d858088ba345b41140c6f1c0eae, type: 3}
@@ -2910,7 +2910,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 18
+  orthographic size: 19
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2997,9 +2997,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88733ece7cf66ed49b780031ab676aec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridWidth: 14
+  gridWidth: 15
   gridHeight: 25
-  margin: 2
+  margin: 0.5
 --- !u!1 &2108130183
 GameObject:
   m_ObjectHideFlags: 0

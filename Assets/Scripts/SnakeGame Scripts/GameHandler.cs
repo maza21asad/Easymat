@@ -20,6 +20,8 @@ public class GameHandler : MonoBehaviour
         instance = this;
     }
 
+    public Canvas MainCanvas => mainCanvas;
+
     void Start()
     {
         LevelGrid = new LevelGrid(16, 30);
@@ -50,14 +52,12 @@ public class GameHandler : MonoBehaviour
         //GameOverWindow.ShowStatic();
     }
 
-    //New
     public static void ShowMetalWarning(string msg)
     {
         instance.metalAppleWarningText.text = msg;
         instance.metalAppleWarningText.gameObject.SetActive(true);
     }
 
-    //New
     public static void HideMetalWarning()
     {
         instance.metalAppleWarningText.gameObject.SetActive(false);
