@@ -28,7 +28,7 @@ public class BlockManager : MonoBehaviour
     private Transform topBlock;
 
     [Header("UI Panels")]
-    public GameObject newPanel;
+    public GameObject newPanel; // <-- Your Game Over Panel
     public GameObject gamePanel;
 
     [Header("Timer Settings")]
@@ -83,6 +83,7 @@ public class BlockManager : MonoBehaviour
     [Header("Flood Settings")]
     public GameObject floodObject;      // Your flood sprite
     public Animator floodAnimator;      // Flood animator
+    public float floodAnimationDuration = 2.0f; // ?? ADJUST THIS VALUE IN INSPECTOR
     // ----------------------------------------------------
 
     private void Start()
@@ -121,15 +122,11 @@ public class BlockManager : MonoBehaviour
                 isTimerRunning = false;
                 timerText.text = "Time: 0";
 
-                // SHOW FLOOD WHEN TIMER ENDS
-                if (floodObject != null)
-                    floodObject.SetActive(true);
-
-                if (floodAnimator != null)
-                    floodAnimator.Play("flood");
-
-                // Call EndGame to handle UI, score, and cleanup
+                // 1. Perform non-UI cleanup (without destroying blocks yet)
                 EndGame();
+
+                // 2. Start the coroutine to handle the delayed block cleanup and panel display
+                StartCoroutine(HandleTimeOut());
 
                 canSpawn = false;
             }
@@ -142,18 +139,28 @@ public class BlockManager : MonoBehaviour
 
             if (firstBlockTimer >= firstBlockLimit)
             {
-                /* * FIX: This is what caused the game to end early.
-                * If you want the game to end here, keep this, but since the goal is to end at main timer, 
-                * this logic is removed/commented out.
-                */
-                // if (landedBlockCount < 9)
-                // {
-                //     EndGame();
-                // }
-
                 isFirstBlockTimerRunning = false;
             }
         }
+    }
+
+    private IEnumerator HandleTimeOut()
+    {
+        // 1. Start the Flood Animation (Blocks are still visible!)
+        if (floodObject != null)
+            floodObject.SetActive(true);
+
+        if (floodAnimator != null)
+            floodAnimator.Play("flood");
+
+        // 2. Wait for the animation
+        yield return new WaitForSeconds(floodAnimationDuration);
+
+        // 3. Cleanup: Hide blocks and holder now (just before the panel)
+        CleanupGameObjects();
+
+        // 4. Show the Game Over Panel
+        ShowGameOverPanel();
     }
 
     private void LateUpdate()
@@ -292,33 +299,46 @@ public class BlockManager : MonoBehaviour
             virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_TrackedObjectOffset.y += 0.5f;
     }
 
-    public void EndGame()
+    // New helper method for cleaning up the game objects
+    private void CleanupGameObjects()
     {
-        if (gameOverSound != null)
-            gameOverSound.Play();
-
-        // ALSO PLAY FLOOD WHEN GAME ENDS BY FALLING (or time ran out)
-        if (floodObject != null)
-            floodObject.SetActive(true);
-
-        if (floodAnimator != null)
-            floodAnimator.Play("flood");
-
-        if (gamePanel != null) gamePanel.SetActive(false);
-        if (newPanel != null) newPanel.SetActive(true);
-
-        if (finalScoreText != null)
-            finalScoreText.text = "" + score;
-
-        canSpawn = false;
-        isTimerRunning = false;
-
         if (holder != null)
             holder.gameObject.SetActive(false);
 
         Block[] allBlocks = FindObjectsOfType<Block>();
         foreach (var block in allBlocks)
             Destroy(block.gameObject);
+    }
+
+    private void ShowGameOverPanel()
+    {
+        if (newPanel != null)
+            newPanel.SetActive(true);
+
+        if (finalScoreText != null)
+            finalScoreText.text = "" + score;
+    }
+
+    public void EndGame()
+    {
+        if (gameOverSound != null)
+            gameOverSound.Play();
+
+        if (gamePanel != null)
+            gamePanel.SetActive(false);
+
+        canSpawn = false;
+        isTimerRunning = false;
+
+        // If EndGame is called by a block falling (timer > 0):
+        if (timer > 0)
+        {
+            CleanupGameObjects(); // Cleanup happens immediately
+            ShowGameOverPanel();  // Panel shows immediately
+        }
+        // If EndGame is called by time running out (timer <= 0), 
+        // CleanupGameObjects() and ShowGameOverPanel() are delayed 
+        // until HandleTimeOut() finishes the flood animation.
     }
 
     public void ShowWindForceText(float force)
@@ -351,12 +371,7 @@ public class BlockManager : MonoBehaviour
         StopAllCoroutines();
         isTimerRunning = false;
 
-        Block[] allBlocks = FindObjectsOfType<Block>();
-        foreach (var block in allBlocks)
-            block.gameObject.SetActive(false);
-
-        if (holder != null)
-            holder.gameObject.SetActive(false);
+        CleanupGameObjects(); // Clean up blocks when opening settings
 
         if (gamePanel != null)
             gamePanel.SetActive(false);
