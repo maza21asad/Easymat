@@ -34,7 +34,7 @@ public class BlockManager : MonoBehaviour
     [Header("Timer Settings")]
     public float gameTime = 60f;
     private float timer;
-    private bool isTimerRunning = false;   // STARTS ONLY AFTER 7 BLOCKS
+    private bool isTimerRunning = false;
     public TMP_Text timerText;
 
     [Header("Wind Settings")]
@@ -75,18 +75,25 @@ public class BlockManager : MonoBehaviour
     public float leftForce = -2.5f;
     public float rightForce = 2.5f;
 
-    // ? AUTO-CENTER SETTINGS
     [Header("Perfect Placement Settings")]
-    public float snapThreshold = 0.4f;   // small left/right allowed
-    public float failThreshold = 1.2f;   // too far = fall
+    public float snapThreshold = 0.4f;
+    public float failThreshold = 1.2f;
+
+    // ------------------ FLOOD SETTINGS ------------------
+    [Header("Flood Settings")]
+    public GameObject floodObject;      // Your flood sprite
+    public Animator floodAnimator;      // Flood animator
+    // ----------------------------------------------------
 
     private void Start()
     {
         initialHolderPos = holder.position;
 
-        // Do NOT start timer yet
         timer = gameTime;
         isTimerRunning = false;
+
+        if (floodObject != null)
+            floodObject.SetActive(false);
 
         SpawnBlock(autoDrop: true);
     }
@@ -114,8 +121,15 @@ public class BlockManager : MonoBehaviour
                 isTimerRunning = false;
                 timerText.text = "Time: 0";
 
-                if (gamePanel != null) gamePanel.SetActive(false);
-                if (newPanel != null) newPanel.SetActive(true);
+                // SHOW FLOOD WHEN TIMER ENDS
+                if (floodObject != null)
+                    floodObject.SetActive(true);
+
+                if (floodAnimator != null)
+                    floodAnimator.Play("flood");
+
+                // Call EndGame to handle UI, score, and cleanup
+                EndGame();
 
                 canSpawn = false;
             }
@@ -128,10 +142,14 @@ public class BlockManager : MonoBehaviour
 
             if (firstBlockTimer >= firstBlockLimit)
             {
-                if (landedBlockCount < 9)
-                {
-                    EndGame();
-                }
+                /* * FIX: This is what caused the game to end early.
+                * If you want the game to end here, keep this, but since the goal is to end at main timer, 
+                * this logic is removed/commented out.
+                */
+                // if (landedBlockCount < 9)
+                // {
+                //     EndGame();
+                // }
 
                 isFirstBlockTimerRunning = false;
             }
@@ -166,19 +184,16 @@ public class BlockManager : MonoBehaviour
 
         landedBlockCount++;
 
-        // TIMER starts after EXACT 7 blocks
-        if (!isTimerRunning && landedBlockCount >= 7)
+        if (!isTimerRunning && landedBlockCount >= 1)
             isTimerRunning = true;
 
         if (isFirstBlockTimerRunning && landedBlockCount >= 9)
             isFirstBlockTimerRunning = false;
 
-        // ? AUTO-CENTER LOGIC
         if (topBlock != null)
         {
             float xDiff = landedBlock.position.x - topBlock.position.x;
 
-            // ? Too far? Block fails + falls
             if (Mathf.Abs(xDiff) > failThreshold)
             {
                 Rigidbody rb = landedBlock.GetComponent<Rigidbody>();
@@ -187,7 +202,6 @@ public class BlockManager : MonoBehaviour
                 return;
             }
 
-            // ? Slight offset? Snap to perfect position
             if (Mathf.Abs(xDiff) <= snapThreshold)
             {
                 landedBlock.position = new Vector3(
@@ -282,6 +296,13 @@ public class BlockManager : MonoBehaviour
     {
         if (gameOverSound != null)
             gameOverSound.Play();
+
+        // ALSO PLAY FLOOD WHEN GAME ENDS BY FALLING (or time ran out)
+        if (floodObject != null)
+            floodObject.SetActive(true);
+
+        if (floodAnimator != null)
+            floodAnimator.Play("flood");
 
         if (gamePanel != null) gamePanel.SetActive(false);
         if (newPanel != null) newPanel.SetActive(true);
