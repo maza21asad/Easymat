@@ -1178,11 +1178,11 @@ Transform:
   m_GameObject: {fileID: 419372846}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.1591, y: 4.18, z: 0}
-  m_LocalScale: {x: 0.40322104, y: 0.34406808, z: 1}
+  m_LocalPosition: {x: 62.232056, y: 1346, z: -35203.55}
+  m_LocalScale: {x: 157.72014, y: 134.58243, z: 391.15057}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1584601441}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &419372849
 MonoBehaviour:
@@ -2072,7 +2072,7 @@ Transform:
   m_GameObject: {fileID: 735719248}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.0132, y: -6.14, z: 0}
+  m_LocalPosition: {x: -0.0132, y: -2.88, z: 0}
   m_LocalScale: {x: 0.45666173, y: 0.5567722, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3428,7 +3428,7 @@ PrefabInstance:
     - target: {fileID: 107803387623998639, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1.4
+      value: -3.38
       objectReference: {fileID: 0}
     - target: {fileID: 107803387623998639, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
@@ -3444,6 +3444,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3756333600247598951, guid: e064e06357fb4bb44a92644895cf64d5,
+        type: 3}
+      propertyPath: m_BodyType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5936007235651870471, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
@@ -9093,15 +9098,17 @@ MonoBehaviour:
   cameraTarget: {fileID: 1918244037}
   score: 0
   scoreText: {fileID: 730614895}
-  holderStepUp: 0.4
+  holderStepUp: 0.1
   holder: {fileID: 419372848}
   newPanel: {fileID: 2087607273}
   gamePanel: {fileID: 0}
   gameTime: 30
   timerText: {fileID: 928050079}
   windEnabled: 0
-  windStartAfter: 10
-  windForceText: {fileID: 1331806067}
+  windStartAfter: 3
+  leftWindAnimatorObject: {fileID: 1872283225}
+  rightWindAnimatorObject: {fileID: 1266764737}
+  windAnimationName: WindPlay
   settingsPanel: {fileID: 0}
   windParticles: {fileID: 1536746281}
   virtualCamera: {fileID: 78833754}
@@ -9112,13 +9119,15 @@ MonoBehaviour:
   fallSound: {fileID: 1549969908}
   gameOverSound: {fileID: 331839873}
   windSound: {fileID: 128040672}
-  leftForce: -2
-  rightForce: 2
+  leftForce: -1
+  rightForce: 1
+  cameraStepOffset: 0.85
   snapThreshold: 0.4
   failThreshold: 1.2
   floodObject: {fileID: 735719248}
   floodAnimator: {fileID: 735719252}
   floodAnimationDuration: 2
+  floodVerticalOffset: 0
 --- !u!114 &1549969907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9423,6 +9432,7 @@ RectTransform:
   - {fileID: 730614893}
   - {fileID: 1501210822}
   - {fileID: 1069045733}
+  - {fileID: 419372848}
   - {fileID: 928050078}
   - {fileID: 8120392760995421602}
   - {fileID: 816152496}
@@ -12984,7 +12994,6 @@ SceneRoots:
   - {fileID: 637157457}
   - {fileID: 1549969904}
   - {fileID: 416043036}
-  - {fileID: 419372848}
   - {fileID: 1150437097}
   - {fileID: 1536746282}
   - {fileID: 331839874}

@@ -41,8 +41,13 @@ public class BlockManager : MonoBehaviour
     public bool windEnabled = false;
     public int windStartAfter = 10;
 
-    [Header("Wind UI")]
-    public TMP_Text windForceText;
+    // --------------------------------------------------------------------
+    // ? NEW WIND ANIMATION REFERENCES
+    [Header("Wind Animation")]
+    public GameObject leftWindAnimatorObject;
+    public GameObject rightWindAnimatorObject;
+    public string windAnimationName = "WindPlay"; // Set this to the name of your wind animation clip
+    // --------------------------------------------------------------------
 
     [Header("Settings Panel")]
     public GameObject settingsPanel;
@@ -72,8 +77,11 @@ public class BlockManager : MonoBehaviour
     public AudioSource windSound;
 
     [Header("Wind Force Settings")]
-    public float leftForce = -2.5f;
-    public float rightForce = 2.5f;
+    public float leftForce = -1.0f;
+    public float rightForce = 1.0f;
+
+    [Header("Camera Settings")]
+    public float cameraStepOffset = 0.85f; // Used to manually adjust the camera tracking
 
     [Header("Perfect Placement Settings")]
     public float snapThreshold = 0.4f;
@@ -83,7 +91,8 @@ public class BlockManager : MonoBehaviour
     [Header("Flood Settings")]
     public GameObject floodObject;      // Your flood sprite
     public Animator floodAnimator;      // Flood animator
-    public float floodAnimationDuration = 2.0f; // ?? ADJUST THIS VALUE IN INSPECTOR
+    public float floodAnimationDuration = 2.0f;
+    public float floodVerticalOffset = 0f; // NEW: Adjust flood position relative to holder
     // ----------------------------------------------------
 
     private void Start()
@@ -95,6 +104,10 @@ public class BlockManager : MonoBehaviour
 
         if (floodObject != null)
             floodObject.SetActive(false);
+
+        // Ensure wind visuals are off at start
+        if (leftWindAnimatorObject != null) leftWindAnimatorObject.SetActive(false);
+        if (rightWindAnimatorObject != null) rightWindAnimatorObject.SetActive(false);
 
         SpawnBlock(autoDrop: true);
     }
@@ -191,11 +204,11 @@ public class BlockManager : MonoBehaviour
 
         landedBlockCount++;
 
-        if (!isTimerRunning && landedBlockCount >= 1)
+        if (!isTimerRunning && landedBlockCount >= 5)
             isTimerRunning = true;
 
-        if (isFirstBlockTimerRunning && landedBlockCount >= 9)
-            isFirstBlockTimerRunning = false;
+        /* if (isFirstBlockTimerRunning && landedBlockCount >= 9)
+            isFirstBlockTimerRunning = false;*/
 
         if (topBlock != null)
         {
@@ -223,6 +236,9 @@ public class BlockManager : MonoBehaviour
         topBlock = landedBlock;
 
         StartCoroutine(MoveHolderUp(holderStepUp, 0.3f));
+
+        // ? CALL THE NEW POSITION UPDATE METHOD HERE
+        UpdateVisualElementsPosition();
 
         if (!windEnabled && blockCount >= windStartAfter)
             windEnabled = true;
@@ -268,7 +284,8 @@ public class BlockManager : MonoBehaviour
             if (blockScript.WindForce > 0) displayForce = rightForce;
             else if (blockScript.WindForce < 0) displayForce = leftForce;
 
-            ShowWindForceText(displayForce);
+            // ? Call the new method to show the directional animation
+            ShowWindAnimation(displayForce);
         }
     }
 
@@ -282,6 +299,10 @@ public class BlockManager : MonoBehaviour
     {
         if (windParticles == null) return;
 
+        // Turn off all animation objects before changing wind direction
+        if (leftWindAnimatorObject != null) leftWindAnimatorObject.SetActive(false);
+        if (rightWindAnimatorObject != null) rightWindAnimatorObject.SetActive(false);
+
         if (force > 0)
             windParticles.transform.rotation = Quaternion.Euler(0, 0, 0);
         else if (force < 0)
@@ -293,13 +314,76 @@ public class BlockManager : MonoBehaviour
             windParticles.Play();
     }
 
+    // ? NEW POSITION UPDATE LOGIC
+    private void UpdateVisualElementsPosition()
+    {
+        // 1. Update Wind Animators
+        // Move the wind visuals to the same height as the holder
+        Vector3 targetWindPos = new Vector3(
+            leftWindAnimatorObject.transform.position.x, // Keep X position static
+            holder.position.y,
+            leftWindAnimatorObject.transform.position.z // Keep Z position static
+        );
+
+        if (leftWindAnimatorObject != null)
+            leftWindAnimatorObject.transform.position = targetWindPos;
+
+        if (rightWindAnimatorObject != null)
+            rightWindAnimatorObject.transform.position = targetWindPos;
+
+
+        // 2. Update Flood Object (Adjusted for bottom of screen)
+        // Move the flood object based on the holder position, adjusted by the offset
+        if (floodObject != null)
+        {
+            Vector3 targetFloodPos = new Vector3(
+                floodObject.transform.position.x,
+                holder.position.y + floodVerticalOffset, // Move with holder, adjusted by offset
+                floodObject.transform.position.z
+            );
+
+            // Note: You may need to adjust the floodVerticalOffset value in the inspector.
+            // Start with a large negative value like -5 or -10 to place it near the bottom of the screen.
+            floodObject.transform.position = targetFloodPos;
+        }
+    }
+
+
+    // ? NEW METHOD TO MANAGE WIND ANIMATION VISUALS
+    public void ShowWindAnimation(float force)
+    {
+        if (!windEnabled) return;
+
+        // Ensure both are off initially
+        if (leftWindAnimatorObject != null) leftWindAnimatorObject.SetActive(false);
+        if (rightWindAnimatorObject != null) rightWindAnimatorObject.SetActive(false);
+
+        if (force > 0) // Right Force
+        {
+            if (rightWindAnimatorObject != null)
+            {
+                rightWindAnimatorObject.SetActive(true);
+                // Optional: Play the animation clip if your Animator isn't set to play on enable
+                rightWindAnimatorObject.GetComponent<Animator>()?.Play(windAnimationName);
+            }
+        }
+        else if (force < 0) // Left Force
+        {
+            if (leftWindAnimatorObject != null)
+            {
+                leftWindAnimatorObject.SetActive(true);
+                // Optional: Play the animation clip
+                leftWindAnimatorObject.GetComponent<Animator>()?.Play(windAnimationName);
+            }
+        }
+    }
+
     void Camofsetadd()
     {
         if (virtualCamera != null)
-            virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_TrackedObjectOffset.y += 0.5f;
+            virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_TrackedObjectOffset.y += cameraStepOffset;
     }
 
-    // New helper method for cleaning up the game objects
     private void CleanupGameObjects()
     {
         if (holder != null)
@@ -308,6 +392,10 @@ public class BlockManager : MonoBehaviour
         Block[] allBlocks = FindObjectsOfType<Block>();
         foreach (var block in allBlocks)
             Destroy(block.gameObject);
+
+        // Also ensure wind animations stop and hide during cleanup
+        if (leftWindAnimatorObject != null) leftWindAnimatorObject.SetActive(false);
+        if (rightWindAnimatorObject != null) rightWindAnimatorObject.SetActive(false);
     }
 
     private void ShowGameOverPanel()
@@ -333,36 +421,11 @@ public class BlockManager : MonoBehaviour
         // If EndGame is called by a block falling (timer > 0):
         if (timer > 0)
         {
-            CleanupGameObjects(); // Cleanup happens immediately
-            ShowGameOverPanel();  // Panel shows immediately
+            CleanupGameObjects();
+            ShowGameOverPanel();
         }
         // If EndGame is called by time running out (timer <= 0), 
-        // CleanupGameObjects() and ShowGameOverPanel() are delayed 
-        // until HandleTimeOut() finishes the flood animation.
-    }
-
-    public void ShowWindForceText(float force)
-    {
-        if (!windEnabled || windForceText == null) return;
-
-        string forceText = "0 Force";
-        if (force > 0) forceText = "Right Force";
-        else if (force < 0) forceText = "Left Force";
-
-        windForceText.text = forceText;
-
-        windForceText.gameObject.SetActive(true);
-        windForceText.alpha = 0f;
-        windForceText.transform.localScale = Vector3.zero;
-
-        Sequence s = DOTween.Sequence();
-        s.AppendInterval(0.7f)
-         .Append(windForceText.DOFade(1f, 0.25f))
-         .Join(windForceText.transform.DOScale(1f, 0.25f).SetEase(Ease.OutBack))
-         .AppendInterval(0.6f)
-         .Append(windForceText.DOFade(0f, 0.5f))
-         .Join(windForceText.transform.DOScale(0.8f, 0.5f))
-         .OnComplete(() => windForceText.gameObject.SetActive(false));
+        // HandleTimeOut() handles the final cleanup and panel display.
     }
 
     public void OpenSettings()
@@ -371,7 +434,7 @@ public class BlockManager : MonoBehaviour
         StopAllCoroutines();
         isTimerRunning = false;
 
-        CleanupGameObjects(); // Clean up blocks when opening settings
+        CleanupGameObjects(); // Clean up blocks and animations when opening settings
 
         if (gamePanel != null)
             gamePanel.SetActive(false);
