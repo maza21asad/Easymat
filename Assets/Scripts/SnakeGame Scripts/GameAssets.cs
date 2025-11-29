@@ -20,6 +20,8 @@ public class GameAssets : MonoBehaviour
     [Header("Apple Timer UI Sprites")]
     public Sprite circleSprite;
 
+    [Header("Wall Prefab")]
+    public GameObject wallTilePrefab;
 
     private void Awake()
     {

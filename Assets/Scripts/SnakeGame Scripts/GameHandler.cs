@@ -13,7 +13,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private Text metalAppleWarningText;
     public Canvas mainCanvas;
 
-    private LevelGrid LevelGrid;
+    public LevelGrid levelGrid { get; private set; }
 
     private void Awake()
     {
@@ -24,16 +24,16 @@ public class GameHandler : MonoBehaviour
 
     void Start()
     {
-        LevelGrid = new LevelGrid(16, 30);
+        levelGrid = new LevelGrid(16, 30);
 
-        snake.Setup(LevelGrid);
-        LevelGrid.Setup(snake);
+        snake.Setup(levelGrid);
+        levelGrid.Setup(snake);
     }
 
     private void Update()
     {
-        if (LevelGrid != null)
-            LevelGrid.Update();
+        if (levelGrid != null)
+            levelGrid.Update();
     }
 
 

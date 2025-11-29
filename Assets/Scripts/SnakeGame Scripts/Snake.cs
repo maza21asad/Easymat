@@ -79,6 +79,9 @@ public class Snake : MonoBehaviour
     {
         yield return new WaitForSeconds(duration);
         canPassWalls = false;
+
+        // Tell LevelGrid to recreate the walls
+        FindObjectOfType<GameHandler>().levelGrid.CreateWalls();
     }
 
 

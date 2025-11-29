@@ -42,6 +42,8 @@ public class LevelGrid
     private GameObject blueAppleObject;
     private bool blueAppleActive = false;
 
+    // added new for testing ==================================
+    private List<GameObject> wallObjects = new List<GameObject>();
 
     private int width;
     private int height;
@@ -105,6 +107,8 @@ public class LevelGrid
         this.snake = snake;
 
         SpawnRedApple();
+
+        CreateWalls();  // added new for testing ==================================
     }
 
     private void SpawnRedApple()
@@ -211,7 +215,7 @@ public class LevelGrid
             redAppleEatCount++;
 
             // Every 5 red apples → Golden apple appears
-            if (redAppleEatCount % 3 == 0 && !goldenAppleActive)
+            if (redAppleEatCount % 5 == 0 && !goldenAppleActive)
             {
                 SpawnGoldenApple();
             }
@@ -227,14 +231,14 @@ public class LevelGrid
             }
 
             // Every 15 red apples → Metal apple MUST appear
-            if (redAppleEatCount % 5 == 0 && !metalAppleActive)
+            if (redAppleEatCount % 12 == 0 && !metalAppleActive)
             {
                 SpawnMetalApple();
             }
 
             // added new for testing ==================================
             // Every 8 red apples → Blue apple MUST appear
-            if (redAppleEatCount % 8 == 0 && !blueAppleActive)
+            if (redAppleEatCount % 2 == 0 && !blueAppleActive)
             {
                 SpawnBlueApple();
             }
@@ -290,6 +294,12 @@ public class LevelGrid
 
             snake.canPassWalls = true;
             snake.StartCoroutine(snake.DisableWallPassAfter(5f));
+
+            // added new for testing ==================================
+            snake.canPassWalls = true;
+            snake.StartCoroutine(snake.DisableWallPassAfter(5f));
+            // Remove visual walls
+            ClearWalls();
 
             return false; // no grow
         }
@@ -375,4 +385,40 @@ public class LevelGrid
     //    }
     //    return gridPosition;
     //}
+
+    // added new for testing ==================================
+    public void CreateWalls()
+    {
+        ClearWalls();
+
+        // Top and bottom walls
+        for (int x = 0; x < width; x++)
+        {
+            CreateWallAt(new Vector2Int(x, -1));       // bottom row (outside grid)
+            CreateWallAt(new Vector2Int(x, height));   // top row (outside grid)
+        }
+
+        // Left and right walls
+        for (int y = 0; y < height; y++)
+        {
+            CreateWallAt(new Vector2Int(-1, y));       // left border
+            CreateWallAt(new Vector2Int(width, y));    // right border
+        }
+    }
+
+    private void CreateWallAt(Vector2Int pos)
+    {
+        GameObject wall = Object.Instantiate(GameAssets.Instance.wallTilePrefab);
+        wall.transform.position = new Vector3(pos.x, pos.y, 0);
+        wallObjects.Add(wall);
+    }
+
+    public void ClearWalls()
+    {
+        foreach (var w in wallObjects)
+            Object.Destroy(w);
+
+        wallObjects.Clear();
+    }
+
 }
