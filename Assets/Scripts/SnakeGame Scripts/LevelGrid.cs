@@ -20,7 +20,8 @@ public class LevelGrid
 
     private RectTransform goldenAppleCircleRect; // store rect for easy positioning
 
-    private Image appleCircleUI;
+    private Image goldenAppleCircleUI;
+    private Image metalAppleCircleUI;
 
     // Diamond apple
     private Vector2Int diamondApplePosition;
@@ -45,16 +46,16 @@ public class LevelGrid
         {
             goldenAppleTimer -= Time.deltaTime;
 
-            if (appleCircleUI != null)
-                appleCircleUI.fillAmount = goldenAppleTimer / goldenAppleDuration;
+            if (goldenAppleCircleUI != null)
+                goldenAppleCircleUI.fillAmount = goldenAppleTimer / goldenAppleDuration;
 
             if (goldenAppleTimer <= 0f)
             {
                 Object.Destroy(goldenAppleObject);
                 goldenAppleActive = false;
 
-                if (appleCircleUI != null)
-                    GameObject.Destroy(appleCircleUI.gameObject);
+                if (goldenAppleCircleUI != null)
+                    GameObject.Destroy(goldenAppleCircleUI.gameObject);
             }
         }
 
@@ -66,22 +67,22 @@ public class LevelGrid
             GameHandler.ShowMetalWarning("Eat the metal apple! Time left: " + metalAppleTimer.ToString("F1"));
 
             // The timer
-            if (appleCircleUI != null)
-                appleCircleUI.fillAmount = goldenAppleTimer / goldenAppleDuration;
+            if (metalAppleCircleUI != null)
+                metalAppleCircleUI.fillAmount = metalAppleTimer / metalAppleDuration;
 
             if (metalAppleTimer <= 0f)
             {
                 metalAppleActive = false;
                 Object.Destroy(metalAppleObject);
 
+                // The timer
+                if (metalAppleCircleUI != null) 
+                    GameObject.Destroy(metalAppleCircleUI.gameObject);
+
                 GameHandler.HideMetalWarning();
 
                 // === SNAKE GAME OVER (same as collision) ===
                 snake.SendMessage("ForceGameOver");
-
-                // The timer
-                if (appleCircleUI != null)
-                    GameObject.Destroy(appleCircleUI.gameObject);
             }
         }
     }
@@ -132,7 +133,7 @@ public class LevelGrid
         //goldenAppleCircleUI = CreateGoldenAppleCircleUI();
         //goldenAppleCircleUI.fillAmount = 1f;
 
-        appleCircleUI = CreateWorldTimer(GameAssets.Instance.circleSprite, new Color(0f, 1f, 0f, 0.05f), 3f, goldenAppleObject.transform);
+        goldenAppleCircleUI = CreateWorldTimer(GameAssets.Instance.circleSprite, new Color(0f, 1f, 0f, 0.05f), 3f, goldenAppleObject.transform);
     }
 
     private void SpawnDiamondApple()
@@ -169,7 +170,7 @@ public class LevelGrid
 
         GameHandler.ShowMetalWarning("Eat the Metal Apple in 7 seconds!");
 
-        appleCircleUI = CreateWorldTimer(GameAssets.Instance.circleSprite, new Color(0f, 0f, 1f, 0.05f), 3f, metalAppleObject.transform);
+        metalAppleCircleUI = CreateWorldTimer(GameAssets.Instance.circleSprite, new Color(0f, 0f, 1f, 0.05f), 3f, metalAppleObject.transform);
     }
 
 
@@ -185,7 +186,7 @@ public class LevelGrid
             redAppleEatCount++;
 
             // Every 5 red apples → Golden apple appears
-            if (redAppleEatCount % 2 == 0 && !goldenAppleActive)
+            if (redAppleEatCount % 3 == 0 && !goldenAppleActive)
             {
                 SpawnGoldenApple();
             }
@@ -201,7 +202,7 @@ public class LevelGrid
             }
 
             // Every 15 red apples → Metal apple MUST appear
-            if (redAppleEatCount % 3 == 0 && !metalAppleActive)
+            if (redAppleEatCount % 5 == 0 && !metalAppleActive)
             {
                 SpawnMetalApple();
             }
@@ -214,10 +215,10 @@ public class LevelGrid
             Object.Destroy(goldenAppleObject);
             goldenAppleActive = false;
 
-            if (appleCircleUI != null)
+            if (goldenAppleCircleUI != null)
             {
-                GameObject.Destroy(appleCircleUI.gameObject);
-                appleCircleUI = null;
+                GameObject.Destroy(goldenAppleCircleUI.gameObject);
+                goldenAppleCircleUI = null;
                 goldenAppleCircleRect = null;
             }
 
