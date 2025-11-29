@@ -36,6 +36,13 @@ public class LevelGrid
     private float metalAppleTimer = 0f;
     private bool metalAppleWaiting = false; // triggered every 15 apples
 
+    // added new for testing ==================================
+    // Blue apple
+    private Vector2Int blueApplePosition;
+    private GameObject blueAppleObject;
+    private bool blueAppleActive = false;
+
+
     private int width;
     private int height;
     private Snake snake;
@@ -173,6 +180,24 @@ public class LevelGrid
         metalAppleCircleUI = CreateWorldTimer(GameAssets.Instance.circleSprite, new Color(0f, 0f, 1f, 0.05f), 3f, metalAppleObject.transform);
     }
 
+    // added new for testing ==================================
+    private void SpawnBlueApple()
+    {
+        do
+        {
+            blueApplePosition = new Vector2Int(Random.Range(0, width), Random.Range(0, height));
+        }
+        while (snake.GetFullSnakeGridPositionList().Contains(blueApplePosition));
+
+        blueAppleObject = new GameObject("BlueApple", typeof(SpriteRenderer));
+        blueAppleObject.GetComponent<SpriteRenderer>().sprite = GameAssets.Instance.blueAppleSprite;
+
+        blueAppleObject.transform.position = new Vector3(blueApplePosition.x, blueApplePosition.y, 0);
+
+        blueAppleActive = true;
+    }
+
+
 
     public bool TrySnakeEatFood(Vector2Int snakeGridPosition)
     {
@@ -205,6 +230,13 @@ public class LevelGrid
             if (redAppleEatCount % 5 == 0 && !metalAppleActive)
             {
                 SpawnMetalApple();
+            }
+
+            // added new for testing ==================================
+            // Every 8 red apples → Blue apple MUST appear
+            if (redAppleEatCount % 8 == 0 && !blueAppleActive)
+            {
+                SpawnBlueApple();
             }
 
             return true; // grow
@@ -249,6 +281,20 @@ public class LevelGrid
             return false;
         }
 
+        // added new for testing ==================================
+        // BLUE APPLE = Pass walls for 5 sec
+        if (blueAppleActive && snakeGridPosition == blueApplePosition)
+        {
+            Object.Destroy(blueAppleObject);
+            blueAppleActive = false;
+
+            snake.canPassWalls = true;
+            snake.StartCoroutine(snake.DisableWallPassAfter(5f));
+
+            return false; // no grow
+        }
+
+
         return false;
     }
 
@@ -286,24 +332,47 @@ public class LevelGrid
         return img;
     }
 
+    // added new for testing ==================================
     public Vector2Int ValidateGridPosition(Vector2Int gridPosition)
     {
-        if (gridPosition.x < 0)
+        // If Blue Apple power is active → wrap around
+        if (snake.canPassWalls)
         {
-            gridPosition.x = width - 1;
+            if (gridPosition.x < 0) gridPosition.x = width - 1;
+            if (gridPosition.x > width - 1) gridPosition.x = 0;
+            if (gridPosition.y < 0) gridPosition.y = height - 1;
+            if (gridPosition.y > height - 1) gridPosition.y = 0;
+
+            return gridPosition;
         }
-        if (gridPosition.x > width - 1)
+
+        // If Blue Apple NOT active → walls cause game over
+        if (gridPosition.x < 0 || gridPosition.x > width - 1 ||
+            gridPosition.y < 0 || gridPosition.y > height - 1)
         {
-            gridPosition.x = 0;
+            snake.SendMessage("ForceGameOver"); // you already use this
         }
-        if (gridPosition.y < 0)
-        {
-            gridPosition.y = height - 1;
-        }
-        if (gridPosition.y > height - 1)
-        {
-            gridPosition.y = 0;
-        }
+
         return gridPosition;
     }
+    //public Vector2Int ValidateGridPosition(Vector2Int gridPosition)
+    //{
+    //    if (gridPosition.x < 0)
+    //    {
+    //        gridPosition.x = width - 1;
+    //    }
+    //    if (gridPosition.x > width - 1)
+    //    {
+    //        gridPosition.x = 0;
+    //    }
+    //    if (gridPosition.y < 0)
+    //    {
+    //        gridPosition.y = height - 1;
+    //    }
+    //    if (gridPosition.y > height - 1)
+    //    {
+    //        gridPosition.y = 0;
+    //    }
+    //    return gridPosition;
+    //}
 }

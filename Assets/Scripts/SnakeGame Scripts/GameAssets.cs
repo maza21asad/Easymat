@@ -8,13 +8,14 @@ public class GameAssets : MonoBehaviour
     public Sprite snakeHeadSprite;
     public Sprite snakeBodySprite;
     public Sprite snakeBodyCornerSprite;
-    public Sprite snakeTailSprite;
+    //public Sprite snakeTailSprite;
 
     [Header("Apple Sprites")]
     public Sprite redAppleSprite;
     public Sprite goldenAppleSprite;
     public Sprite diamondAppleSprite;
     public Sprite metalAppleSprite;
+    public Sprite blueAppleSprite;
 
     [Header("Apple Timer UI Sprites")]
     public Sprite circleSprite;

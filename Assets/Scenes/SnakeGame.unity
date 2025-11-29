@@ -2231,6 +2231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   snakeMoveSpeed: 5
+  canPassWalls: 0
   gameOverWindow: {fileID: 1261139936}
 --- !u!1 &1732205817
 GameObject:
@@ -2530,11 +2531,11 @@ MonoBehaviour:
   snakeBodySprite: {fileID: 21300000, guid: 8ce54ed058eb3ae49933f4560752b64a, type: 3}
   snakeBodyCornerSprite: {fileID: 21300000, guid: eccc136f13fecb24dbed0bc71472f811,
     type: 3}
-  snakeTailSprite: {fileID: 0}
   redAppleSprite: {fileID: 21300000, guid: de813d858088ba345b41140c6f1c0eae, type: 3}
   goldenAppleSprite: {fileID: 21300000, guid: 85fb971046c757b439eb3bc8ef28ac1d, type: 3}
   diamondAppleSprite: {fileID: 21300000, guid: 42c2d0f0a57517c4fa1064b73afac5ff, type: 3}
   metalAppleSprite: {fileID: 21300000, guid: fef311b1fd0f2524d96039c14495b9f1, type: 3}
+  blueAppleSprite: {fileID: 21300000, guid: 04dc7a11f36f0b5458d71e32847e95c0, type: 3}
   circleSprite: {fileID: 21300000, guid: b435f566d5175fc448a1797c79b950cf, type: 3}
 --- !u!1 &1894389391
 GameObject:

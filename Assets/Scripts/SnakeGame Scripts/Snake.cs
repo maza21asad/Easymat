@@ -21,6 +21,8 @@ public class Snake : MonoBehaviour
     private LevelGrid levelGrid;
     private int snakeBodySize;
 
+    public bool canPassWalls = false;   // added new for testing ==================================
+
     private List<SnakeMovePosition> snakeMovePositionList;
 
     private List<SnakeBodyPart> snakeBodyPartList;
@@ -71,6 +73,14 @@ public class Snake : MonoBehaviour
         }
 
     }
+
+    // added new for testing ==================================
+    public IEnumerator DisableWallPassAfter(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        canPassWalls = false;
+    }
+
 
     private void HandleInput()
     {
