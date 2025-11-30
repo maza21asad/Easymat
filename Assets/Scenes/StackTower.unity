@@ -468,7 +468,7 @@ Transform:
   m_GameObject: {fileID: 78833753}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -39115.06}
+  m_LocalPosition: {x: 0, y: 0, z: -38166.984}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3449,6 +3449,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_BodyType
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3756333600247598951, guid: e064e06357fb4bb44a92644895cf64d5,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5936007235651870471, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
@@ -9102,10 +9107,14 @@ MonoBehaviour:
   holder: {fileID: 419372848}
   newPanel: {fileID: 2087607273}
   gamePanel: {fileID: 0}
-  gameTime: 30
+  challengeTimeLimit: 30
   timerText: {fileID: 928050079}
+  blocksToFirstChallenge: 15
+  blocksToNextChallenge: 10
+  blocksGoalInChallenge: 7
   windEnabled: 0
   windStartAfter: 10
+  windFrequency: 5
   leftWindAnimatorObject: {fileID: 1872283225}
   rightWindAnimatorObject: {fileID: 1266764737}
   windAnimationName: WindPlay
@@ -9115,19 +9124,18 @@ MonoBehaviour:
   moveSpeed: 1
   moveRange: 2.5
   finalScoreText: {fileID: 1611158149}
-  firstBlockLimit: 30
   fallSound: {fileID: 1549969908}
   gameOverSound: {fileID: 331839873}
   windSound: {fileID: 128040672}
   leftForce: -1
   rightForce: 1
   cameraStepOffset: 1
-  snapThreshold: 0.4
+  snapThreshold: 0.3
   failThreshold: 1.2
   floodObject: {fileID: 735719248}
   floodAnimator: {fileID: 735719252}
   floodAnimationDuration: 2
-  floodVerticalOffset: 8
+  floodVerticalOffset: 0
 --- !u!114 &1549969907
 MonoBehaviour:
   m_ObjectHideFlags: 0

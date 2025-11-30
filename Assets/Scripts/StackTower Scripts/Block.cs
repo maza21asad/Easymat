@@ -13,24 +13,31 @@ public class Block : MonoBehaviour
 
     public float WindForce => windForce;
 
-    public void Initialize(BlockManager blockManager, bool autoDrop = false)
+    // Updated Initialize method with a new parameter: applyWind
+    public void Initialize(BlockManager blockManager, bool autoDrop = false, bool applyWind = false)
     {
         manager = blockManager;
         rb = GetComponent<Rigidbody2D>();
 
-        if (manager.windEnabled)
+        // Only apply wind if the manager explicitly says so for this block
+        if (manager.windEnabled && applyWind)
         {
-            // --- ? FIXED WIND FORCE MAGNITUDE (1.0f) ---
             // Randomly choose direction (left or right)
             if (Random.value > 0.5f)
-                windForce = 1.0f; // Fixed right wind force
+                windForce = manager.rightForce; // Use manager's public setting
             else
-                windForce = -1.0f; // Fixed left wind force
-            // ------------------------------------------
+                windForce = manager.leftForce; // Use manager's public setting
+
+            // Ensure the wind arrow is visible if wind is applied
+            if (windArrow != null)
+                windArrow.SetActive(true);
         }
         else
         {
             windForce = 0f;
+            // Ensure the wind arrow is invisible if no wind is applied
+            if (windArrow != null)
+                windArrow.SetActive(false);
         }
 
         rb.bodyType = RigidbodyType2D.Kinematic;
@@ -41,6 +48,8 @@ public class Block : MonoBehaviour
     {
         if (!hasDropped)
         {
+            // Handle horizontal movement here if needed (e.g., using A/D keys or touch drag)
+
             if (Input.GetMouseButtonDown(0))
                 DropBlock();
         }
@@ -86,6 +95,9 @@ public class Block : MonoBehaviour
         {
             hasLanded = true;
             manager.OnBlockLanded(this.transform);
+
+            // OPTIONAL: Make blocks static once landed to prevent further movement
+            // rb.bodyType = RigidbodyType2D.Static; 
         }
     }
 }
