@@ -201,8 +201,6 @@ public class LevelGrid
         blueAppleActive = true;
     }
 
-
-
     public bool TrySnakeEatFood(Vector2Int snakeGridPosition)
     {
         // RED APPLE = Grow + 10 points
@@ -303,7 +301,6 @@ public class LevelGrid
 
             return false; // no grow
         }
-
 
         return false;
     }
@@ -420,5 +417,4 @@ public class LevelGrid
 
         wallObjects.Clear();
     }
-
 }

@@ -452,5 +452,4 @@ public class Snake : MonoBehaviour
         if (gameOverWindow != null)
             gameOverWindow.ShowGameOver();
     }
-
 }
