@@ -235,6 +235,8 @@ public class BlockManager : MonoBehaviour
         AddScore(10);
         topBlock = landedBlock;
 
+
+
         StartCoroutine(MoveHolderUp(holderStepUp, 0.3f));
 
         // ? CALL THE NEW POSITION UPDATE METHOD HERE
@@ -334,16 +336,14 @@ public class BlockManager : MonoBehaviour
 
         // 2. Update Flood Object (Adjusted for bottom of screen)
         // Move the flood object based on the holder position, adjusted by the offset
+        // In UpdateVisualElementsPosition()
         if (floodObject != null)
         {
             Vector3 targetFloodPos = new Vector3(
                 floodObject.transform.position.x,
-                holder.position.y + floodVerticalOffset, // Move with holder, adjusted by offset
+                 floodVerticalOffset, // <--- This line controls its height
                 floodObject.transform.position.z
             );
-
-            // Note: You may need to adjust the floodVerticalOffset value in the inspector.
-            // Start with a large negative value like -5 or -10 to place it near the bottom of the screen.
             floodObject.transform.position = targetFloodPos;
         }
     }
@@ -456,5 +456,16 @@ public class BlockManager : MonoBehaviour
 
         isTimerRunning = true;
         canSpawn = true;
+    }
+
+    // In BlockManager.cs
+
+    public void RestartGame()
+    {
+        // Get the name of the current active scene
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        // Reload the scene
+        SceneManager.LoadScene(currentSceneName);
     }
 }
