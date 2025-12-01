@@ -42,6 +42,10 @@ public class Block : MonoBehaviour
 
         rb.bodyType = RigidbodyType2D.Kinematic;
         rb.gravityScale = 0f;
+
+        // ? CORE FIX: Blocks start with Z-rotation locked. 
+        // The BlockManager will unlock the current top block after it lands.
+        manager.SetBlockZRotationConstraint(this.transform, true);
     }
 
     private void Update()
@@ -57,6 +61,22 @@ public class Block : MonoBehaviour
 
     private void DropBlock()
     {
+        /*if (hasDropped) return;
+
+        hasDropped = true;
+
+        // ?? FIX: Unparent from holder
+        transform.SetParent(null);
+
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        rb.gravityScale = 1f;
+
+        // Apply the fixed wind force as an impulse
+        if (manager.windEnabled && Mathf.Abs(windForce) > 0f)
+            rb.AddForce(new Vector2(windForce, 0f), ForceMode2D.Impulse);
+
+        if (windArrow != null)
+            windArrow.SetActive(false);*/
         if (hasDropped) return;
 
         hasDropped = true;
@@ -73,6 +93,13 @@ public class Block : MonoBehaviour
 
         if (windArrow != null)
             windArrow.SetActive(false);
+
+        // ? NEW LINE: Briefly slow down time when the block drops
+        Time.timeScale = 0.8f;
+
+        // Also call a routine on the manager to reset Time.timeScale shortly after drop
+        manager.StartCoroutine(manager.ResetTimeScale(0.3f));
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -83,6 +110,9 @@ public class Block : MonoBehaviour
             {
                 firstBlockGrounded = true;
                 rb.bodyType = RigidbodyType2D.Static;
+
+                // ? FIX: Freeze Z-Rotation for the first block permanently on the ground
+                manager.SetBlockZRotationConstraint(this.transform, true);
             }
             else
             {
@@ -97,7 +127,7 @@ public class Block : MonoBehaviour
             manager.OnBlockLanded(this.transform);
 
             // OPTIONAL: Make blocks static once landed to prevent further movement
-            // rb.bodyType = RigidbodyType2D.Static; 
+            // rb.bodyType = RigidbodyType2D.Static;  
         }
     }
 }

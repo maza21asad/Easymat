@@ -3428,7 +3428,7 @@ PrefabInstance:
     - target: {fileID: 107803387623998639, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -3.38
+      value: -2.69
       objectReference: {fileID: 0}
     - target: {fileID: 107803387623998639, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
@@ -3448,7 +3448,7 @@ PrefabInstance:
     - target: {fileID: 3756333600247598951, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
       propertyPath: m_BodyType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3756333600247598951, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
@@ -9127,8 +9127,8 @@ MonoBehaviour:
   fallSound: {fileID: 1549969908}
   gameOverSound: {fileID: 331839873}
   windSound: {fileID: 128040672}
-  leftForce: -1
-  rightForce: 1
+  leftForce: -2
+  rightForce: 2
   cameraStepOffset: 1
   snapThreshold: 0.3
   failThreshold: 1.2

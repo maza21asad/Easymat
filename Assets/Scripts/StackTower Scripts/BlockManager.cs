@@ -78,9 +78,6 @@ public class BlockManager : MonoBehaviour
     [Header("Final Score UI")]
     public TMP_Text finalScoreText;
 
-    // Removed obsolete timer variables
-    // private int landedBlockCount = 0; 
-
     [Header("Sound Settings")]
     public AudioSource fallSound;
     public AudioSource gameOverSound;
@@ -99,8 +96,8 @@ public class BlockManager : MonoBehaviour
 
     // ------------------ FLOOD SETTINGS ------------------
     [Header("Flood Settings")]
-    public GameObject floodObject;      // Your flood sprite
-    public Animator floodAnimator;      // Flood animator
+    public GameObject floodObject;       // Your flood sprite
+    public Animator floodAnimator;       // Flood animator
     public float floodAnimationDuration = 2.0f;
     public float floodVerticalOffset = 0f; // Adjust flood position relative to holder
     // ----------------------------------------------------
@@ -139,6 +136,12 @@ public class BlockManager : MonoBehaviour
             scoreText.text = "" + score;
     }
 
+    public IEnumerator ResetTimeScale(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay); // Use Realtime to wait regardless of timeScale
+        Time.timeScale = 1f;
+    }
+
     private void Update()
     {
         // ---------------------- CHALLENGE TIMER LOGIC ----------------------
@@ -170,8 +173,6 @@ public class BlockManager : MonoBehaviour
                 else
                 {
                     // This case is technically a successful challenge, but was handled in OnBlockLanded.
-                    // This block is only executed if timer runs out *exactly* when the goal is met or exceeded.
-                    // To ensure clean continuation:
                     EndChallengeSuccess();
                 }
             }
@@ -197,7 +198,7 @@ public class BlockManager : MonoBehaviour
         ShowGameOverPanel();
     }
 
-    // NEW: Handles successful completion of the time challenge
+    // Handles successful completion of the time challenge
     private void EndChallengeSuccess()
     {
         Debug.Log("Challenge Succeeded!");
@@ -227,6 +228,26 @@ public class BlockManager : MonoBehaviour
             targetY = Mathf.Lerp(holder.position.y, desiredY, Time.deltaTime * 5f);
 
         holder.position = new Vector3(initialHolderPos.x + offsetX, targetY, holder.position.z);
+    }
+
+    // ? NEW METHOD: To set the Z rotation constraint on a Rigidbody2D
+    public void SetBlockZRotationConstraint(Transform blockTransform, bool freeze)
+    {
+        // We use Rigidbody2D here, as blocks have already dropped.
+        Rigidbody2D rb = blockTransform.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            if (freeze)
+            {
+                // Set the Freeze Rotation Z bit (lock it)
+                rb.constraints |= RigidbodyConstraints2D.FreezeRotation;
+            }
+            else
+            {
+                // Clear the Freeze Rotation Z bit (unlock it)
+                rb.constraints &= ~RigidbodyConstraints2D.FreezeRotation;
+            }
+        }
     }
 
     public void OnBlockLanded(Transform landedBlock)
@@ -286,16 +307,24 @@ public class BlockManager : MonoBehaviour
                     landedBlock.position.z
                 );
             }
+
+            // ? CORE FIX: Freeze the PREVIOUS top block's Z rotation
+            // The old top block is now part of the stable stack.
+            SetBlockZRotationConstraint(topBlock, true);
         }
 
         AddScore(10);
-        topBlock = landedBlock;
+        topBlock = landedBlock; // Set the NEW block as the top block
+
+        // ? CORE FIX: UNFREEZE the NEW top block's Z rotation
+        // This is the block that should be subject to rotation forces (e.g., wind).
+        SetBlockZRotationConstraint(topBlock, false);
 
         StartCoroutine(MoveHolderUp(holderStepUp, 0.3f));
 
         UpdateVisualElementsPosition();
 
-        // --- ?? WIND FREQUENCY LOGIC (Unchanged) ---
+        // --- WIND FREQUENCY LOGIC ---
         // 1. Check for initial global wind activation
         if (!windEnabled && blockCount >= windStartAfter)
         {
@@ -324,7 +353,7 @@ public class BlockManager : MonoBehaviour
             if (leftWindAnimatorObject != null) leftWindAnimatorObject.SetActive(false);
             if (rightWindAnimatorObject != null) rightWindAnimatorObject.SetActive(false);
         }
-        // --- ?? END WIND FREQUENCY LOGIC ---
+        // --- END WIND FREQUENCY LOGIC ---
 
         if (canSpawn)
             StartCoroutine(SpawnNextBlock());
@@ -343,7 +372,7 @@ public class BlockManager : MonoBehaviour
         blockCount++;
         Camofsetadd();
 
-        // --- ?? CHECK FOR WIND STATE FOR THIS BLOCK ---
+        // --- CHECK FOR WIND STATE FOR THIS BLOCK ---
         bool applyWind = false;
 
         // Wind applies if windEnabled is true AND the counter is at the trigger point (0)
@@ -352,7 +381,7 @@ public class BlockManager : MonoBehaviour
             applyWind = true;
             isCurrentBlockWindy = true;
         }
-        // --- ?? END WIND STATE CHECK ---
+        // --- END WIND STATE CHECK ---
 
         float yOffset = -0.7f;
         spawnPoint.position = new Vector3(holder.position.x, holder.position.y + yOffset, holder.position.z);
@@ -428,7 +457,7 @@ public class BlockManager : MonoBehaviour
 
 
         // 2. Update Flood Object 
-        if (floodObject != null)
+        if (floodObject != null && topBlock != null)
         {
             Vector3 targetFloodPos = new Vector3(
                 floodObject.transform.position.x,
