@@ -96,8 +96,8 @@ public class BlockManager : MonoBehaviour
 
     // ------------------ FLOOD SETTINGS ------------------
     [Header("Flood Settings")]
-    public GameObject floodObject;       // Your flood sprite
-    public Animator floodAnimator;       // Flood animator
+    public GameObject floodObject;// Your flood sprite
+    public Animator floodAnimator;// Flood animator
     public float floodAnimationDuration = 2.0f;
     public float floodVerticalOffset = 0f; // Adjust flood position relative to holder
                                            // ----------------------------------------------------
@@ -464,7 +464,7 @@ public class BlockManager : MonoBehaviour
             rightWindAnimatorObject.transform.position = targetWindPos;
 
 
-        // 2. Update Flood Object 
+        // 2. Update Flood Object?
         if (floodObject != null && topBlock != null)
         {
             Vector3 targetFloodPos = new Vector3(
@@ -552,7 +552,7 @@ public class BlockManager : MonoBehaviour
             CleanupGameObjects();
             ShowGameOverPanel();
         }
-        // If EndGame is called by time running out (timer <= 0), 
+        // If EndGame is called by time running out (timer <= 0),?
         // HandleTimeOut() handles the final cleanup and panel display.
     }
 
@@ -583,7 +583,7 @@ public class BlockManager : MonoBehaviour
             holder.gameObject.SetActive(true);
 
         // Timer resumes if it was running before settings opened, or game continues count-up
-        // We don't want to blindly set it to true, but the state management is complex here. 
+        // We don't want to blindly set it to true, but the state management is complex here.?
         // For simplicity in a single-file script, we'll allow it to be re-enabled if needed elsewhere.
         // For now, only re-enable spawning logic.
         canSpawn = true;
