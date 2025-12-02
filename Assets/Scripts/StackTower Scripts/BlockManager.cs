@@ -96,11 +96,17 @@ public class BlockManager : MonoBehaviour
 
     // ------------------ FLOOD SETTINGS ------------------
     [Header("Flood Settings")]
-    public GameObject floodObject;       // Your flood sprite
-    public Animator floodAnimator;       // Flood animator
+    public GameObject floodObject;       // Your flood sprite
+    public Animator floodAnimator;       // Flood animator
     public float floodAnimationDuration = 2.0f;
     public float floodVerticalOffset = 0f; // Adjust flood position relative to holder
-    // ----------------------------------------------------
+                                           // ----------------------------------------------------
+
+    // ?? NEW SLOW FALL SETTINGS ??
+    [Header("Slow Fall Settings")]
+    public int gravityReductionStartBlock = 18; // Block number (inclusive) to start reducing gravity
+    public float reducedGravityScale = 0.5f; // The reduced gravity scale for slower falling
+    // ?? END NEW SLOW FALL SETTINGS ??
 
     private void Start()
     {
@@ -293,8 +299,9 @@ public class BlockManager : MonoBehaviour
 
             if (Mathf.Abs(xDiff) > failThreshold)
             {
-                Rigidbody rb = landedBlock.GetComponent<Rigidbody>();
-                if (rb != null) rb.isKinematic = false;
+                // Rigidbody rb = landedBlock.GetComponent<Rigidbody>(); // Original line was for 3D Rigidbody
+                Rigidbody2D rb2d = landedBlock.GetComponent<Rigidbody2D>(); // Use 2D Rigidbody
+                if (rb2d != null) rb2d.bodyType = RigidbodyType2D.Dynamic; // Ensure block falls if it missed
                 EndGame();
                 return;
             }
@@ -391,8 +398,8 @@ public class BlockManager : MonoBehaviour
 
         Block blockScript = newBlock.GetComponent<Block>();
         if (blockScript != null)
-            // Pass the determined 'applyWind' state to the block's Initialize method
-            blockScript.Initialize(this, autoDrop, applyWind);
+            // ?? MODIFIED LINE: Pass the blockCount and the determined 'applyWind' state to the block's Initialize method
+            blockScript.Initialize(this, blockCount, autoDrop, applyWind);
 
         if (cameraTarget != null)
             cameraTarget.SetTopBlock(newBlock.transform);
@@ -443,6 +450,7 @@ public class BlockManager : MonoBehaviour
     private void UpdateVisualElementsPosition()
     {
         // 1. Update Wind Animators
+        // Use a position relative to the holder's Y position
         Vector3 targetWindPos = new Vector3(
             leftWindAnimatorObject.transform.position.x,
             holder.position.y,
@@ -456,7 +464,7 @@ public class BlockManager : MonoBehaviour
             rightWindAnimatorObject.transform.position = targetWindPos;
 
 
-        // 2. Update Flood Object 
+        // 2. Update Flood Object 
         if (floodObject != null && topBlock != null)
         {
             Vector3 targetFloodPos = new Vector3(
@@ -544,7 +552,7 @@ public class BlockManager : MonoBehaviour
             CleanupGameObjects();
             ShowGameOverPanel();
         }
-        // If EndGame is called by time running out (timer <= 0), 
+        // If EndGame is called by time running out (timer <= 0), 
         // HandleTimeOut() handles the final cleanup and panel display.
     }
 
@@ -575,7 +583,7 @@ public class BlockManager : MonoBehaviour
             holder.gameObject.SetActive(true);
 
         // Timer resumes if it was running before settings opened, or game continues count-up
-        // We don't want to blindly set it to true, but the state management is complex here. 
+        // We don't want to blindly set it to true, but the state management is complex here. 
         // For simplicity in a single-file script, we'll allow it to be re-enabled if needed elsewhere.
         // For now, only re-enable spawning logic.
         canSpawn = true;
