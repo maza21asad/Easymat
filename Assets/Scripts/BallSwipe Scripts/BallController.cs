@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using DG.Tweening;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class BallController : MonoBehaviour
@@ -14,6 +15,8 @@ public class BallController : MonoBehaviour
     private Vector3 targetPosition;
     private Corner targetCorner;
 
+    private bool isPopping = false;   // ✅ safety flag
+
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -27,7 +30,6 @@ public class BallController : MonoBehaviour
         UpdateSpeed();
     }
 
-
     public void Init(BallColor color)
     {
         ballColor = color;
@@ -38,15 +40,17 @@ public class BallController : MonoBehaviour
     private void UpdateSpeed()
     {
         if (GameManager.Instance.score < 40)
-            fallSpeed = 3f; // slow
+            fallSpeed = 3f;
         else if (GameManager.Instance.score < 100)
-            fallSpeed = 6f; // medium
+            fallSpeed = 6f;
         else
-            fallSpeed = 10f; // hard
+            fallSpeed = 10f;
     }
 
     private void Update()
     {
+        if (isPopping) return; // ✅ stop movement during pop
+
         if (!isMovingToCorner)
         {
             transform.Translate(Vector2.down * fallSpeed * Time.deltaTime, Space.Self);
@@ -55,7 +59,6 @@ public class BallController : MonoBehaviour
             if (transform.position.y < bottomLimit)
             {
                 GameManager.Instance.OnBallMissed(this);
-                Destroy(gameObject);
             }
         }
         else
@@ -64,18 +67,66 @@ public class BallController : MonoBehaviour
             if (Vector3.SqrMagnitude(transform.position - targetPosition) < 0.0004f)
             {
                 GameManager.Instance.OnBallArrived(this, targetCorner);
-                Destroy(gameObject);
+                // ✅ DO NOT destroy here anymore (pop handles it)
             }
         }
     }
 
     public void MoveToCorner(Transform cornerTransform, Corner corner, float speed = 10f)
     {
-        if (cornerTransform == null) return; // Safety check
+        if (cornerTransform == null) return;
+
         targetPosition = cornerTransform.position;
         targetCorner = corner;
         moveToCornerSpeed = speed;
         isMovingToCorner = true;
     }
-}
 
+    // ✅ ✅ ✅ CORRECT MATCH EFFECT (Soft Success Pop)
+    public void SuccessPopAndDestroy()
+    {
+        if (isPopping) return;
+        isPopping = true;
+
+        transform
+            .DOScale(transform.localScale * 0.85f, 0.08f)
+            .SetEase(Ease.InQuad)
+            .OnComplete(() =>
+            {
+                transform
+                    .DOScale(transform.localScale * 1.2f, 0.12f)
+                    .SetEase(Ease.OutBack)
+                    .OnComplete(() =>
+                    {
+                        transform
+                            .DOScale(Vector3.zero, 0.12f)
+                            .SetEase(Ease.InBack)
+                            .OnComplete(() =>
+                            {
+                                Destroy(gameObject);
+                            });
+                    });
+            });
+    }
+
+    // ❌ ❌ ❌ WRONG MATCH / MISS EFFECT (Balloon Pop)
+    public void WrongPopAndDestroy()
+    {
+        if (isPopping) return;
+        isPopping = true;
+
+        transform
+            .DOScale(transform.localScale * 1.5f, 0.12f)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() =>
+            {
+                transform
+                    .DOScale(Vector3.zero, 0.08f)
+                    .SetEase(Ease.InBack)
+                    .OnComplete(() =>
+                    {
+                        Destroy(gameObject);
+                    });
+            });
+    }
+}

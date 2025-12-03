@@ -124,14 +124,22 @@ public class GameManager : MonoBehaviour
         {
             score++;
             audiomanager.Instance.PlayCorrect();
+
+            // ✅ ✅ SUCCESS POP
+            if (ball != null)
+                ball.SuccessPopAndDestroy();
         }
         else
         {
             missCount++;
             audiomanager.Instance.PlayWrong();
 
+            // ❌ ❌ WRONG POP
+            if (ball != null)
+                ball.WrongPopAndDestroy();
+
             if (CameraShake.Instance != null)
-                CameraShake.Instance.Shake();   // ✅ SCREEN SHAKE
+                CameraShake.Instance.Shake();
 
             if (missCount >= maxMisses)
             {
@@ -140,16 +148,23 @@ public class GameManager : MonoBehaviour
             }
         }
 
-
         UpdateUI();
         CheckUnlock();
         spawner.SpawnBall();
     }
 
+
     public void OnBallMissed(BallController ball)
     {
         missCount++;
         audiomanager.Instance.PlayWrong();
+
+        // ❌ ❌ MISS POP
+        if (ball != null)
+            ball.WrongPopAndDestroy();
+
+        if (CameraShake.Instance != null)
+            CameraShake.Instance.Shake();
 
         if (missCount >= maxMisses)
         {
@@ -157,14 +172,11 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (CameraShake.Instance != null)
-            CameraShake.Instance.Shake();   // ✅ SCREEN SHAKE
-
-
         UpdateUI();
         CheckUnlock();
         spawner.SpawnBall();
     }
+
 
     private void GameOver()
     {
