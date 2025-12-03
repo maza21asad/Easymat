@@ -15,6 +15,8 @@ public class BallController : MonoBehaviour
     private Vector3 targetPosition;
     private Corner targetCorner;
 
+    public GameObject popEffect;
+
     private bool isPopping = false;   // ✅ safety flag
 
     private void Awake()
@@ -107,8 +109,17 @@ public class BallController : MonoBehaviour
         //                    });
         //            });
         //    });
+
+
         Destroy(gameObject);
+
+        //actvate particle effect 
+        //GameObject popEffect = GameManager.Instance.GetPopEffect();
     }
+
+    
+
+
 
     // ❌ ❌ ❌ WRONG MATCH / MISS EFFECT (Balloon Pop)
     public void WrongPopAndDestroy()

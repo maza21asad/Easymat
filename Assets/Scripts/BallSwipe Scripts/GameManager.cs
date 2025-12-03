@@ -294,4 +294,5 @@ public class GameManager : MonoBehaviour
             if (spawner) spawner.middleColorsUnlocked = true;
         }
     }
+
 }
