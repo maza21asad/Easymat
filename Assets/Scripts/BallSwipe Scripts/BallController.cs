@@ -88,25 +88,26 @@ public class BallController : MonoBehaviour
         if (isPopping) return;
         isPopping = true;
 
-        transform
-            .DOScale(transform.localScale * 0.85f, 0.08f)
-            .SetEase(Ease.InQuad)
-            .OnComplete(() =>
-            {
-                transform
-                    .DOScale(transform.localScale * 1.2f, 0.12f)
-                    .SetEase(Ease.OutBack)
-                    .OnComplete(() =>
-                    {
-                        transform
-                            .DOScale(Vector3.zero, 0.12f)
-                            .SetEase(Ease.InBack)
-                            .OnComplete(() =>
-                            {
-                                Destroy(gameObject);
-                            });
-                    });
-            });
+        //transform
+        //    .DOScale(transform.localScale * 0.85f, 0.08f)
+        //    .SetEase(Ease.InQuad)
+        //    .OnComplete(() =>
+        //    {
+        //        transform
+        //            .DOScale(transform.localScale * 1.2f, 0.12f)
+        //            .SetEase(Ease.OutBack)
+        //            .OnComplete(() =>
+        //            {
+        //                transform
+        //                    .DOScale(Vector3.zero, 0.12f)
+        //                    .SetEase(Ease.InBack)
+        //                    .OnComplete(() =>
+        //                    {
+        //                        Destroy(gameObject);
+        //                    });
+        //            });
+        //    });
+        Destroy(gameObject);
     }
 
     // ❌ ❌ ❌ WRONG MATCH / MISS EFFECT (Balloon Pop)
