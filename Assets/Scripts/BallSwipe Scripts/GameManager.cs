@@ -130,12 +130,16 @@ public class GameManager : MonoBehaviour
             missCount++;
             audiomanager.Instance.PlayWrong();
 
+            if (CameraShake.Instance != null)
+                CameraShake.Instance.Shake();   // ✅ SCREEN SHAKE
+
             if (missCount >= maxMisses)
             {
                 GameOver();
                 return;
             }
         }
+
 
         UpdateUI();
         CheckUnlock();
@@ -152,6 +156,10 @@ public class GameManager : MonoBehaviour
             GameOver();
             return;
         }
+
+        if (CameraShake.Instance != null)
+            CameraShake.Instance.Shake();   // ✅ SCREEN SHAKE
+
 
         UpdateUI();
         CheckUnlock();
