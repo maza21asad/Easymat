@@ -1615,8 +1615,8 @@ Transform:
   m_GameObject: {fileID: 637157455}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0132, y: -3.78, z: 0}
-  m_LocalScale: {x: 0.4566617, y: 0.5567721, z: 1}
+  m_LocalPosition: {x: -0.0132, y: -3.9982, z: 0}
+  m_LocalScale: {x: 0.4566617, y: 0.6627198, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -3463,7 +3463,7 @@ PrefabInstance:
     - target: {fileID: 5936007235651870471, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5936007235651870471, guid: e064e06357fb4bb44a92644895cf64d5,
         type: 3}
@@ -3870,8 +3870,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 68, y: -1454}
-  m_SizeDelta: {x: 260.45, y: 114.3}
+  m_AnchoredPosition: {x: 9.9, y: -1454}
+  m_SizeDelta: {x: 1113.4, y: 114.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1352878239
 MonoBehaviour:
@@ -3903,7 +3903,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0.73745507, g: 0.5492168, b: 0.9622642, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3920,8 +3920,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 113.6
-  m_fontSizeBase: 113.6
+  m_fontSize: 111
+  m_fontSizeBase: 111
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -9246,6 +9246,7 @@ MonoBehaviour:
   blocksToFirstChallenge: 15
   blocksToNextChallenge: 10
   blocksGoalInChallenge: 8
+  challengePopupText: {fileID: 1352878239}
   windEnabled: 0
   windStartAfter: 10
   windFrequency: 5
@@ -9263,7 +9264,7 @@ MonoBehaviour:
   windSound: {fileID: 128040672}
   leftForce: -2
   rightForce: 2
-  cameraStepOffset: 1
+  cameraStepOffset: 1.08
   snapThreshold: 0.1
   failThreshold: 10
   floodObject: {fileID: 735719248}
@@ -10301,10 +10302,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1557623863146618365, guid: 5f7b8417c15263e4f84d75557979ff8a,
+        type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1557623863146618365, guid: 5f7b8417c15263e4f84d75557979ff8a,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6861439240962131306, guid: 5f7b8417c15263e4f84d75557979ff8a,
         type: 3}
       propertyPath: m_Name
       value: Block
+      objectReference: {fileID: 0}
+    - target: {fileID: 6861439240962131306, guid: 5f7b8417c15263e4f84d75557979ff8a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8207883483696361514, guid: 5f7b8417c15263e4f84d75557979ff8a,
         type: 3}

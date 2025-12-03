@@ -39,13 +39,16 @@ public class BlockManager : MonoBehaviour
 
     // ----- NEW CHALLENGE VARIABLES -----
     [Header("Challenge Settings")]
-    public int blocksToFirstChallenge = 15; // Start challenge after 15 blocks
+    public int blocksToFirstChallenge = 15;
     public int blocksToNextChallenge = 10; // Subsequent challenges start after 10 blocks
     public int blocksGoalInChallenge = 7; // Must place 7 blocks within the time limit
     private int blocksLandedInCurrentChallenge = 0; // Counter for the current challenge
     private int totalBlocksLanded = 0; // Total blocks landed across the whole game
     private int blocksSinceLastChallengeTrigger = 0; // Counter for blocks until the next challenge starts
     // -----------------------------------
+
+    [Header("Challenge UI")]
+    public TMP_Text challengePopupText; // The TMP Text component for the popup message
 
     [Header("Wind Settings")]
     public bool windEnabled = false;
@@ -131,6 +134,10 @@ public class BlockManager : MonoBehaviour
         if (leftWindAnimatorObject != null) leftWindAnimatorObject.SetActive(false);
         if (rightWindAnimatorObject != null) rightWindAnimatorObject.SetActive(false);
 
+        // ** NEW: Ensure the Challenge Popup is hidden at start **
+        if (challengePopupText != null)
+            challengePopupText.gameObject.SetActive(false);
+
         SpawnBlock(autoDrop: true);
     }
 
@@ -203,6 +210,24 @@ public class BlockManager : MonoBehaviour
         // 4. Show the Game Over Panel
         ShowGameOverPanel();
     }
+
+    // ** NEW METHOD: To display the challenge goal popup **
+    private IEnumerator ShowChallengePopup(int goalBlocks, float duration)
+    {
+        if (challengePopupText != null)
+        {
+            // Set the message and make it visible
+            challengePopupText.text = $"Drop {goalBlocks} Blocks!";
+            challengePopupText.gameObject.SetActive(true);
+
+            // Wait for the specified duration
+            yield return new WaitForSeconds(duration);
+
+            // Hide the text
+            challengePopupText.gameObject.SetActive(false);
+        }
+    }
+
 
     // Handles successful completion of the time challenge
     private void EndChallengeSuccess()
@@ -288,6 +313,9 @@ public class BlockManager : MonoBehaviour
                 isTimerRunning = true;
                 timer = challengeTimeLimit; // Start timer at 30s
                 blocksLandedInCurrentChallenge = 1; // This landed block counts as the first one!
+
+                // ** NEW: Start the popup animation **
+                StartCoroutine(ShowChallengePopup(blocksGoalInChallenge, 2.5f));
             }
         }
 
@@ -523,6 +551,10 @@ public class BlockManager : MonoBehaviour
         if (leftWindAnimatorObject != null) leftWindAnimatorObject.SetActive(false);
         if (rightWindAnimatorObject != null) rightWindAnimatorObject.SetActive(false);
         if (windParticles != null) windParticles.Stop();
+
+        // ** Ensure popup is hidden during cleanup **
+        if (challengePopupText != null)
+            challengePopupText.gameObject.SetActive(false);
     }
 
     private void ShowGameOverPanel()
@@ -552,7 +584,7 @@ public class BlockManager : MonoBehaviour
             CleanupGameObjects();
             ShowGameOverPanel();
         }
-        // If EndGame is called by time running out (timer <= 0),?
+        // If EndGame is called by time running out (timer <= 0),
         // HandleTimeOut() handles the final cleanup and panel display.
     }
 
@@ -583,7 +615,7 @@ public class BlockManager : MonoBehaviour
             holder.gameObject.SetActive(true);
 
         // Timer resumes if it was running before settings opened, or game continues count-up
-        // We don't want to blindly set it to true, but the state management is complex here.?
+        // We don't want to blindly set it to true, but the state management is complex here.
         // For simplicity in a single-file script, we'll allow it to be re-enabled if needed elsewhere.
         // For now, only re-enable spawning logic.
         canSpawn = true;
