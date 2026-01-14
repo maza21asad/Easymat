@@ -12,4 +12,6 @@
             <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
         </activity>
     </application>
+	
+
 </manifest>
